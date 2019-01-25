@@ -6,6 +6,8 @@ In this course, you will implement some of the 2D drawing routines we have been 
 
 This assignment involves line drawing. You will implement the Midpoint Line Drawing algorithm discussed in class. You have the option of doing this assignment in C or C++.
 
+**Before moving forward, it is recommended that you create another Git branch for your work.** To create a new Git branch for this repository, run `git branch <your-new-branch-name-here>` followed by `git checkout <your-new-branch-name-here>`. We will be triggering "submissions" via **pull request** into the master branch.
+
 ## 2. Programming Environment
 
 The programming environment that you will use for this assignment (along with the the remainder of the 2D assignments) is a set of simple modules with implementations in C and C++. These modules are designed as object-oriented classes in the C++ version, and as equivalent non-OO versions in C. You are free to use either of the implementations. The classes include:
@@ -83,7 +85,16 @@ Your implementations will be tested using a set of driver programs; some of them
 
 The minimum acceptance test is that your code must be complete - that is, it must compile and link cleanly when submitted. Submissions **will not be accepted** if they fail to compile and link cleanly. *(Warning messages from the compiler are acceptable, but not fatal errors.)*
 
-This command will tell you whether or not an archive exists, and if so, what files submitted by you are in it.
+To submit your work, commit your changes to your CSCI 510 Git repository and push it to your remote Github repository, using something like the following:
+
+```sh
+git stage .
+git commit -m "My commit message"
+git push
+```
+
+After you have committed your work and pushed to `remote`, create a pull request (a *PR*) on Github and assign/invite your
+instructur to the PR (in this case `jake-brandt`). If you decide that you would like to submit further changes after already kicking off your PR, just tag your instructor (something along the lines of "`@jake-brandt I have additional changes`") in a comment on the PR thread and let your instructor know that there are new changes which you would like to include in your graded assignment.
 
 ## 6. Grading
 
