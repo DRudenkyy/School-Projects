@@ -43,9 +43,7 @@ void Rasterizer::myInitials( void ) {
 
     C.setColor( 0.678, 0.847, 0.902 );
 
-    drawLine(0, 600, 600, 5);
-    drawLine(0, 300, 300, 10); 
-    drawLine(0, 0, 300, 500);
+    drawLine(300, 600, 0, 0);
 
 
 
@@ -143,9 +141,9 @@ void Rasterizer::drawLine( int x0, int y0, int x1, int y1 )
       }
     }
   }
-  else
+  else//large slope
   {
-    dE = 2 * dy;
+    dE = 2 * dx;
     if(negativeSlope) {
       dSNE = 2 * (dx + dy);
       d = dE + dx;
@@ -159,13 +157,15 @@ void Rasterizer::drawLine( int x0, int y0, int x1, int y1 )
     {
       C.setPixel(x, y);
       
-      if(d <= 0) {
+      if(d <= 0)
+      {
 	if(negativeSlope)
 	  d -= dE;
 	else
 	  d += dE;
       }
-      else {
+      else
+      {
 	if(negativeSlope) {
           --x;
 	  d -= dSNE;
