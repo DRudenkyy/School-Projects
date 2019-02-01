@@ -5,7 +5,7 @@
 //  Based on a C++ version created by Joe Geigel on 11/30/11.
 //  Copyright 2014 Rochester Institute of Technology. All rights reserved.
 //
-//  Contributor:  YOUR_NAME_HERE
+//  Contributor:  Dmytro Rudenkyy
 //
 
 #include <cmath>
@@ -66,9 +66,42 @@ void Rasterizer::myInitials( void ) {
 
 void Rasterizer::drawLine( int x0, int y0, int x1, int y1 )
 {
-    //
-    // add code here to implement drawLine()
-    // using the midpoint line algorithm
-    //
+  int dE, dNE, x, y, d, m;
+  int dy = y1 - y0;
+  int dx = x1 - x0;
 
+  dE = 2 * dy;
+  dNE = 2 * (dy - dx);
+  d = dE - dx;
+
+  if(dx >= dy) //slope is 0 < m <=1
+  {
+    for(x = x0, y = y0; x <= x1; ++x)
+    {
+	C.setPixel(x, y);
+
+	if(d <= 0) {
+	  d += dE;
+	}
+	else {
+	  ++y;
+	  d += dNE;
+	}
+    }
+  }
+  else
+  {
+    for(x = x0, y = y0; y <= y1; ++y)
+    {
+      C.setPixel(x, y);
+
+      if(d <= 0) {
+	  d += dE;
+      }
+      else {
+        ++x;
+        d += dNE;
+      }
+    }
+  }
 }
