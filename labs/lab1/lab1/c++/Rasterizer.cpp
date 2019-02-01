@@ -43,6 +43,8 @@ void Rasterizer::myInitials( void ) {
 
     C.setColor( 0.678, 0.847, 0.902 );
 
+    drawLine(0, 0, 200, 400); 
+
     //
     // add code here to draw your initials
     // with calls to your drawLine() function
@@ -66,31 +68,45 @@ void Rasterizer::myInitials( void ) {
 
 void Rasterizer::drawLine( int x0, int y0, int x1, int y1 )
 {
+  if(x0 > x1)//line is being drawn right to left
+    {
+      int tempx0 = x0;
+      int tempy0 = y0;
+      x0 = x1;
+      y0 = y1;
+      x1 = tempx0;
+      y1 = tempy0;
+    }
+
   int dE, dNE, x, y, d, m;
   int dy = y1 - y0;
   int dx = x1 - x0;
 
-  dE = 2 * dy;
-  dNE = 2 * (dy - dx);
-  d = dE - dx;
-
-  if(abs(dx) >= abs(dy)) //slope is 0 < m <=1
+  if(abs(dx) > abs(dy)) //slope is 0 < m < 1
   {
+    dE = 2 * dy;
+    dNE = 2 * (dy - dx);
+    d = dE - dx;
+    
     for(x = x0, y = y0; x <= x1; ++x)
     {
-	C.setPixel(x, y);
+      C.setPixel(x, y);
 
-	if(d <= 0) {
+      if(d <= 0) {
 	  d += dE;
-	}
-	else {
-	  ++y;
-	  d += dNE;
-	}
+      }
+      else {
+        ++y;
+	d += dNE;
+      }
     }
   }
   else
   {
+    dE = 2 * dx;
+    dNE = 2 * (dx - dy);
+    d = dE - dy;
+  
     for(x = x0, y = y0; y <= y1; ++y)
     {
       C.setPixel(x, y);
@@ -100,7 +116,7 @@ void Rasterizer::drawLine( int x0, int y0, int x1, int y1 )
       }
       else {
         ++x;
-        d += dNE;
+	d += dNE;
       }
     }
   }
