@@ -43,9 +43,8 @@ void Rasterizer::myInitials( void ) {
 
     C.setColor( 0.678, 0.847, 0.902 );
 
-    drawLine(0, 0, 600, 600);
     drawLine(0, 600, 600, 5);
-    drawLine(300, 0, 300, 600); 
+    drawLine(0, 300, 100, 0); 
     drawLine(100, 600, 100, 0); 
 
 
@@ -93,16 +92,16 @@ void Rasterizer::drawLine( int x0, int y0, int x1, int y1 )
   int dy = y1 - y0;
   int dx = x1 - x0;
 
-  if(x0 == x1)
+  if(x0 == x1)//vertical line
   {
-    if(y0 < y1)
+    if(y0 < y1)//bottom to up
     {
       for(y = y0; y <= y1; y++)
       {
 	C.setPixel(x0,y);
       }
     }
-    else
+    else//top to bottom
     {
       for(y = y1; y <= y0; y++)
       {
