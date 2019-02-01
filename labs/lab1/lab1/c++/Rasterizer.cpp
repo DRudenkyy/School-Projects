@@ -74,7 +74,7 @@ void Rasterizer::drawLine( int x0, int y0, int x1, int y1 )
   dNE = 2 * (dy - dx);
   d = dE - dx;
 
-  if(dx >= dy) //slope is 0 < m <=1
+  if(abs(dx) >= abs(dy)) //slope is 0 < m <=1
   {
     for(x = x0, y = y0; x <= x1; ++x)
     {
