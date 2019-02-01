@@ -44,8 +44,8 @@ void Rasterizer::myInitials( void ) {
     C.setColor( 0.678, 0.847, 0.902 );
 
     drawLine(0, 600, 600, 5);
-    drawLine(0, 300, 100, 0); 
-    drawLine(100, 600, 100, 0); 
+    drawLine(0, 300, 300, 10); 
+    drawLine(0, 0, 300, 500);
 
 
 
@@ -74,14 +74,14 @@ void Rasterizer::myInitials( void ) {
 void Rasterizer::drawLine( int x0, int y0, int x1, int y1 )
 {
   if(x0 > x1)//line is being drawn right to left so flip
-    {
+  {
       int tempx0 = x0;
       int tempy0 = y0;
       x0 = x1;
       y0 = y1;
       x1 = tempx0;
       y1 = tempy0;
-    }
+  }
 
   bool negativeSlope = false;
 
