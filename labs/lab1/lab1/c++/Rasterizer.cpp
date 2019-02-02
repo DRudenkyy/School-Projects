@@ -43,15 +43,32 @@ void Rasterizer::myInitials( void ) {
 
     C.setColor( 0.678, 0.847, 0.902 );
 
-    drawLine(300, 600, 0, 0);
+    //D
+    drawLine(25, 25, 25, 250);//1
+    drawLine(25, 250, 100, 250);//2
+    drawLine(100, 250, 175, 100);//3
+    drawLine(175, 150, 175, 100);//4
+    drawLine(175, 100, 100, 25);//5
+    drawLine(100, 25, 25, 25);//6
+    //inside d
+    drawLine(5+50, 5+100, 5+50, 50+100);//1
+    drawLine(55, 150, 70, 150);//2
+    drawLine(70, 150, 85, 120);//3
+    drawLine(85, 130, 85, 115);//4
+    drawLine(85, 115, 70, 105);//5
+    drawLine(55, 105, 70, 105);//6
 
+    //R
+    drawLine(325, 25, 325, 250);//1
+    drawLine(325, 250, 500, 250);//2
+    drawLine(500, 250, 500, 175);//3
+    drawLine(500, 175, 375, 175);//4
+    drawLine(375, 175, 535, 25);//5
+    drawLine(535, 25, 480, 25);//6
+    drawLine(480, 25, 375, 125);//7
+    drawLine(375, 125, 375, 25);//8
+    drawLine(375, 25, 325, 25);//8
 
-
-
-    //
-    // add code here to draw your initials
-    // with calls to your drawLine() function
-    // 
 
 }
 
@@ -146,7 +163,7 @@ void Rasterizer::drawLine( int x0, int y0, int x1, int y1 )
     dE = 2 * dx;
     if(negativeSlope) {
       dSNE = 2 * (dx + dy);
-      d = dE + dx;
+      d = dE + dy;
     }
     else {
       dSNE = 2 * (dx - dy);
