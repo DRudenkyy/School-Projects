@@ -6,7 +6,7 @@
 //  Updated 09/21/2018 by wrc.
 //  Copyright 2018 Rochester Institute of Technology. All rights reserved.
 //
-//  Contributor:  YOUR_NAME_HERE
+//  Contributor:  Dmytro Rudenkyy
 //
 
 #include <list>
