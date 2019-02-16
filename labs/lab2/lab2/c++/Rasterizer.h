@@ -6,7 +6,7 @@
 //  Updated 09/21/2018 by wrc.
 //  Copyright 2018 Rochester Institute of Technology. All rights reserved.
 //
-//  Contributor:  YOUR_NAME_HERE
+//  Contributor:  Dmytro Rudenkyy
 //
 
 #ifndef _RASTERIZER_H_
@@ -14,11 +14,11 @@
 
 class Canvas;
 
-struct Edge {
+struct EdgeBucket {
     int   yMax;         // Final Y
     float x;            // Initial X
     float inverseSlope; // Slope of edge WRT Y
-    Edge* nextEdge;     // Reference to next Edge at scanline
+    EdgeBucket* nextEdge;     // Reference to next Edge at scanline
 };
 
 ///
@@ -31,9 +31,16 @@ class Rasterizer {
     // number of scanlines
     ///
 
-    int n_scanlines;
+    const int n_scanlines;
+
+    // Each scanline has a pointer to its first Edge
+    EdgeBucket* edgeTable;
+
+    EdgeBucket* activeEdgeList = nullptr;    // No edges until we hit
+                                             // first scanline with edges.
     
 public:
+
 
     ///
     // Drawing canvas
@@ -68,7 +75,7 @@ public:
     ///
     void drawPolygon( int n, const int x[], const int y[] );
 
-    void initializeEges();
+    void initializeEdgeTable();
     
 };
 
