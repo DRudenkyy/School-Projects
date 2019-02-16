@@ -18,6 +18,13 @@
 
 using namespace std;
 
+// We have a 600-pixel vertical resolution
+const int MAX_SCANLINES = 600;
+
+// Each scanline has a pointer to its first Edge
+Edge* edgesByInitialScanline[MAX_SCANLINES];
+
+
 ///
 // Simple class that performs rasterization algorithms
 ///
@@ -53,3 +60,11 @@ void Rasterizer::drawPolygon(int n, const int x[], const int y[] )
 {
     // YOUR IMPLEMENTATION HERE
 }
+
+void initializeEdges()
+{
+    //set rows initially to empty
+    for(int i = 0; i < MAX_SCANLINES; i++)
+	edgesByInitialScanline[i] = 0;
+}
+

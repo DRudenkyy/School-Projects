@@ -14,6 +14,13 @@
 
 class Canvas;
 
+struct Edge {
+    int   yMax;         // Final Y
+    float x;            // Initial X
+    float inverseSlope; // Slope of edge WRT Y
+    Edge* nextEdge;     // Reference to next Edge at scanline
+};
+
 ///
 // Simple class that performs rasterization algorithms
 ///
@@ -60,6 +67,8 @@ public:
     // @param y - array of y coordinates
     ///
     void drawPolygon( int n, const int x[], const int y[] );
+
+    void initializeEges();
     
 };
 
