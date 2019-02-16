@@ -31,7 +31,6 @@ using namespace std;
 ///
 Rasterizer::Rasterizer( int n, Canvas &canvas ) : n_scanlines(n), C(canvas)
 {
-   edgeTable = new EdgeBucket[n];
 }
 
 ///
@@ -53,13 +52,16 @@ Rasterizer::Rasterizer( int n, Canvas &canvas ) : n_scanlines(n), C(canvas)
 ///
 void Rasterizer::drawPolygon(int n, const int x[], const int y[] )
 {
-    // YOUR IMPLEMENTATION HERE
+    for(int i = 0; i < n; i++)
+    {
+        return;
+    }
 }
 
 void Rasterizer::initializeEdgeTable()
 {
     //set rows initially to empty
     for(int i = 0; i < n_scanlines; i++)
-	edgeTable[i] = {};
+	edgeTable[i] = nullptr;
 }
 

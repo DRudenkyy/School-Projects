@@ -31,10 +31,15 @@ class Rasterizer {
     // number of scanlines
     ///
 
-    const int n_scanlines;
+    int n_scanlines;
+
+	//We are guaranteed a 600-pixel vertical resolution
+	//I am using this as a crutch since I spent way too much time 
+	//trying to figure out how to dynamically allocate array sizes in C (using malloc)
+    static const int MAX_SCANLINES = 600;
 
     // Each scanline has a pointer to its first Edge
-    EdgeBucket* edgeTable;
+    EdgeBucket* edgeTable[MAX_SCANLINES];
 
     EdgeBucket* activeEdgeList = nullptr;    // No edges until we hit
                                              // first scanline with edges.
