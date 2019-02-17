@@ -31,6 +31,7 @@ using namespace std;
 ///
 Rasterizer::Rasterizer( int n, Canvas &canvas ) : n_scanlines(n), C(canvas)
 {
+	activeEdgeList = nullptr;
 }
 
 ///
@@ -54,10 +55,20 @@ void Rasterizer::drawPolygon(int n, const int x[], const int y[] )
 {
 	//initialize edge table and active list
 	initializeEdgeTable();
-	activeEdgelist = nullptr;
+			
+}
 
-	//loop through giiven vertices and prep the edgeTable
-    for(int i = 0; i < n - 1; i = i + 2)
+void Rasterizer::initializeEdgeTable()
+{
+    //set rows initially to empty
+    for(int i = 0; i < n_scanlines; i++)
+	edgeTable[i] = nullptr;
+}
+
+//loop through giiven vertices and prep the edgeTable
+void Rasterizer::allocateEdgeTable(int n, const int x[], const int y[])
+{
+	for(int i = 0; i < n - 1; i = i + 2)
     {
 		int yMin, yMax;
         int x0 = x[i];
@@ -74,31 +85,25 @@ void Rasterizer::drawPolygon(int n, const int x[], const int y[] )
 			yMin = y0;
 			yMax = y1;
 		}
-
-		int im = calcInverseSlope;
-		if(im != 0)
+		//if the edge isn't a horizontal line we add it to ET
+		if(y0 != y1)
 		{
-			//needs work here
-			edgeTable[yMin]
-		}
+			float invM = (x0 - x1) / (y0 - y1);
 			
-    }
+			EdgeBucket* newEdge = new EdgeBucket();
+			newEdge->yMax = yMax;
+			newEdge->x = x0;
+			newEdge->inverseSlope = invM;
+			
+			if(edgeTable[yMin] == nullptr)
+				edgeTable[yMin] = newEdge;
+			else
+			{
+				EdgeBucket *existingEdge = edgeTable[yMin];
+				while(existingEdge->nextEdge != nullptr)
+					existingEdge = existingEdge->nextEdge;
+				existingEdge->nextEdge = newEdge;
+			}
+		}
+	}
 }
-
-float Rasterizer::calcInverseSlope(int x0, int y0, int x1, int y1)
-{
-	//line is horizontal, which we can ignore
-	if(y0 == y1 || x0 == x1)
-		return 0;
-	
-	return( (x0 - x1) / (y0 - y1) );
-
-}
-
-void Rasterizer::initializeEdgeTable()
-{
-    //set rows initially to empty
-    for(int i = 0; i < n_scanlines; i++)
-	edgeTable[i] = nullptr;
-}
-

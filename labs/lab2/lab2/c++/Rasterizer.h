@@ -42,7 +42,7 @@ class Rasterizer {
     EdgeBucket* edgeTable[MAX_SCANLINES];
 
     EdgeBucket* activeEdgeList = nullptr;    // No edges until we hit
-                                             // first scanline with edges.
+											// first scanline with edges.
     
 public:
 
@@ -81,7 +81,8 @@ public:
     void drawPolygon( int n, const int x[], const int y[] );
 
     void initializeEdgeTable();
-	float Rasterizer::calcInverseSlope(int x0, int y0, int x1, int y1);
+    
+    void allocateEdgeTable(int n, const int x[], const int y[]);
     
 };
 
