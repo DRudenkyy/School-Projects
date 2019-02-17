@@ -81,6 +81,7 @@ public:
     void drawPolygon( int n, const int x[], const int y[] );
 
     void initializeEdgeTable();
+	float Rasterizer::calcInverseSlope(int x0, int y0, int x1, int y1);
     
 };
 

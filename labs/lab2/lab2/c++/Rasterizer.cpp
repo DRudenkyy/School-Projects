@@ -52,10 +52,47 @@ Rasterizer::Rasterizer( int n, Canvas &canvas ) : n_scanlines(n), C(canvas)
 ///
 void Rasterizer::drawPolygon(int n, const int x[], const int y[] )
 {
-    for(int i = 0; i < n; i++)
+	//initialize edge table and active list
+	initializeEdgeTable();
+	activeEdgelist = nullptr;
+
+	//loop through giiven vertices and prep the edgeTable
+    for(int i = 0; i < n - 1; i = i + 2)
     {
-        return;
+		int yMin, yMax;
+        int x0 = x[i];
+		int y0 = y[i];
+		int x1 = x[i + 1];
+		int y1 = y[i + 1];
+		if(y0 > y1)
+		{
+			yMin = y1;
+			yMax = y0;
+		}
+		else
+		{
+			yMin = y0;
+			yMax = y1;
+		}
+
+		int im = calcInverseSlope;
+		if(im != 0)
+		{
+			//needs work here
+			edgeTable[yMin]
+		}
+			
     }
+}
+
+float Rasterizer::calcInverseSlope(int x0, int y0, int x1, int y1)
+{
+	//line is horizontal, which we can ignore
+	if(y0 == y1 || x0 == x1)
+		return 0;
+	
+	return( (x0 - x1) / (y0 - y1) );
+
 }
 
 void Rasterizer::initializeEdgeTable()
