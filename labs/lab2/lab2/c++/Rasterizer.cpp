@@ -31,7 +31,6 @@ using namespace std;
 ///
 Rasterizer::Rasterizer( int n, Canvas &canvas ) : n_scanlines(n), C(canvas)
 {
-	activeEdgeList = nullptr;
 }
 
 void Rasterizer::test()
@@ -39,6 +38,7 @@ void Rasterizer::test()
 	int x[] = {2, 7, 13, 13, 7, 2};
 	int y[] = {3, 1, 5, 11, 7, 9};
 	drawPolygon(6, x, y);
+	allocateEdgeTable(6, x, y);
 	printEdgeTable();
 }
 
@@ -63,15 +63,31 @@ void Rasterizer::drawPolygon(int n, const int x[], const int y[] )
 {
 	//initialize edge table
 	initializeEdgeTable();
-	allocateEdgeTable(n, x, y);
-	sortEdgeTable();
-	
+	//allocateEdgeTable(n, x, y);
+	//sortEdgeTable();
 }
 
 void Rasterizer::printEdgeTable()
 {
 	for(int i = 0; i < 12; i++)
-		cout << i << edgeTable[i];
+	{
+		cerr << i << ": |";
+		EdgeBucket* bucketList = edgeTable[i];
+		if(bucketList != nullptr)
+		{
+			do
+			{
+				cerr << bucketList->yMax << " | "  
+				<< bucketList->x << " | "
+				<< bucketList->inverseSlope << " | --> || ";
+				bucketList = bucketList->nextEdge;
+			}while(bucketList != nullptr);
+		}
+		else
+			cerr << "NULL |";
+			
+		cerr << endl;
+	}
 }
 
 //initialize edge table
@@ -81,7 +97,7 @@ void Rasterizer::initializeEdgeTable()
     for(int i = 0; i < n_scanlines; i++)
 		edgeTable[i] = nullptr;
 }
-
+/*
 //sort the edgeTable
 void Rasterizer::sortEdgeTable()
 {
@@ -144,36 +160,47 @@ EdgeBucket* Rasterizer::sortEdgeBuckets(EdgeBucket* head)
     current->nextEdge = head;
     return top;
 }
-
-//loop through giiven vertices and prep the edgeTable
+*/
+//loop through given vertices and prep the edgeTable
 void Rasterizer::allocateEdgeTable(int n, const int x[], const int y[])
 {
-	for(int i = 0; i < n - 1; i = i + 2)
+	for(int i = 0; i < n; i ++)
     {
+		cerr << " ADDING ";
 		int yMin, yMax;
         int x0 = x[i];
 		int y0 = y[i];
-		int x1 = x[i + 1];
-		int y1 = y[i + 1];
-		if(y0 > y1)
-		{
+		
+		int x1 = -1;
+		int y1 = -1;
+	    int initialX = -1;
+
+		if(i + 1 != n) {
+			x1 = x[i + 1];
+			y1 = y[i + 1];
+		}else {	//we are on the last point and looping back to start
+			x1 = x[0];
+			y1 = y[0];
+		}//determine y Min and Max and where x starts
+		if(y0 > y1) {
 			yMin = y1;
 			yMax = y0;
-		}
-		else
-		{
+			initialX = x1;
+		} else {
 			yMin = y0;
 			yMax = y1;
+			initialX = x0;
 		}
 		//if the edge isn't a horizontal line we add it to ET
 		if(y0 != y1)
 		{
-			float invM = (x0 - x1) / (y0 - y1);
+			float invM = (float)(x0 - x1) / (float)(y0 - y1);
 			
 			EdgeBucket* newEdge = new EdgeBucket();
 			newEdge->yMax = yMax;
-			newEdge->x = x0;
+			newEdge->x = initialX;
 			newEdge->inverseSlope = invM;
+			newEdge->nextEdge = nullptr;
 			
 			if(edgeTable[yMin] == nullptr)
 				edgeTable[yMin] = newEdge;

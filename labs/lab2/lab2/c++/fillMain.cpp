@@ -230,6 +230,8 @@ void makePolygons( Rasterizer &R )
     x[3] = 880;  y[3] =   0;
     R.C.setColor( 0.4f, 0.5f, 0.1f );
     R.drawPolygon( 4, x, y );
+    
+    R.test();
 }
 
 ///
