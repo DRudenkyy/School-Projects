@@ -35,10 +35,15 @@ Rasterizer::Rasterizer( int n, Canvas &canvas ) : n_scanlines(n), C(canvas)
 
 void Rasterizer::test()
 {
-	int x[] = {2, 7, 13, 13, 7, 2};
-	int y[] = {3, 1, 5, 11, 7, 9};
-	drawPolygon(6, x, y);
-	allocateEdgeTable(6, x, y);
+	int x[] = {2, 7, 13, 13, 12, 10, 7, 2};
+	int y[] = {9, 7, 11, 5, 1, 3, 1, 3};
+	//int x[] = {2, 7, 13, 13, 7, 2};
+	//int y[] = {9, 7, 11, 5, 1, 3};
+	drawPolygon(8, x, y);
+	printEdgeTable();
+	
+	EdgeBucket* bucketList = edgeTable[1];
+	sortEdgeBuckets(bucketList);
 	printEdgeTable();
 }
 
@@ -61,33 +66,9 @@ void Rasterizer::test()
 ///
 void Rasterizer::drawPolygon(int n, const int x[], const int y[] )
 {
-	//initialize edge table
 	initializeEdgeTable();
-	//allocateEdgeTable(n, x, y);
-	//sortEdgeTable();
-}
-
-void Rasterizer::printEdgeTable()
-{
-	for(int i = 0; i < 12; i++)
-	{
-		cerr << i << ": |";
-		EdgeBucket* bucketList = edgeTable[i];
-		if(bucketList != nullptr)
-		{
-			do
-			{
-				cerr << bucketList->yMax << " | "  
-				<< bucketList->x << " | "
-				<< bucketList->inverseSlope << " | --> || ";
-				bucketList = bucketList->nextEdge;
-			}while(bucketList != nullptr);
-		}
-		else
-			cerr << "NULL |";
-			
-		cerr << endl;
-	}
+	allocateEdgeTable(n, x, y);
+	sortEdgeTable();
 }
 
 //initialize edge table
@@ -97,7 +78,7 @@ void Rasterizer::initializeEdgeTable()
     for(int i = 0; i < n_scanlines; i++)
 		edgeTable[i] = nullptr;
 }
-/*
+
 //sort the edgeTable
 void Rasterizer::sortEdgeTable()
 {
@@ -106,67 +87,60 @@ void Rasterizer::sortEdgeTable()
 		EdgeBucket* bucketList = edgeTable[i];
 		if(bucketList != nullptr)
 		{
+			//only sort if there are 2 or more buckets per array
 			if(bucketList->nextEdge != nullptr)
 			{
-				EdgeBucket* sortedBucketList = sortEdgeBuckets(bucketList);
-				delete(bucketList);
-				edgeTable[i] = sortedBucketList;
+				sortEdgeBuckets(bucketList);
 			}
 		}
 	}
 }
 
+//sorts edge bucket lists by x value then inverse slope 
 EdgeBucket* Rasterizer::sortEdgeBuckets(EdgeBucket* head) 
 {
-    EdgeBucket *top = nullptr; // first EdgeBucket we will return this value
-    EdgeBucket *current = nullptr;
-    bool sorted = false;
-    while (sorted == false) 
+    EdgeBucket * curr;
+    for(bool didSwap = true; didSwap; ) 
     {
-        // we are going to look for the lowest value in the list
-        EdgeBucket *parent = head;
-        EdgeBucket *lowparent = head; // we need this because list is only linked forward
-        EdgeBucket *low = head; // this will end up with the lowest EdgeBucket
-        sorted = true;
-        do 
+        didSwap = false;
+        for(curr = head; curr->nextEdge != nullptr; curr = curr->nextEdge) 
         {
-            // find the lowest valued key
-            EdgeBucket* next = parent->nextEdge;
-            if ( (parent->x > next->x)	//first sort on x 
-            || ( (parent->x == next->x) && //if xs are equal, sort by inverseSlope
-				 (parent->inverseSlope > next->inverseSlope) ) ) 
+			if ( (curr->x > curr->nextEdge->x)	//first sort on x 
+            || ( (curr->x == curr->nextEdge->x) && //if xs are equal, sort by inverseSlope
+				 (curr->inverseSlope > curr->nextEdge->inverseSlope) ) ) 
             {
-                lowparent = parent;
-                low = next;
-                sorted = false;
-			}
-            parent = parent->nextEdge;
-		} while (parent->nextEdge != nullptr);
-		
-        if (current != nullptr) // first time current == nullptr
-            current->nextEdge = low;
-	
-        // remove the lowest item from the list and reconnect the list
-        // basically you are forming two lists, one with the sorted EdgeBuckets 
-        // and one with the remaining unsorted EdgeBuckets
-        current = low;
-        if (current == head) { head = current->nextEdge; }
-        lowparent->nextEdge = low->nextEdge;
-        current->nextEdge = nullptr;
-        if (top == nullptr) {
-            top = current;
-            }
-        };
-    current->nextEdge = head;
-    return top;
+				swapBucketValues(curr);
+				didSwap = true;
+			}			 
+		}
+    }
+    return head;
 }
-*/
+
+//helper function used to swap values inside buckets
+EdgeBucket* Rasterizer::swapBucketValues(EdgeBucket* bucket)
+{
+	EdgeBucket* nextBucket = bucket->nextEdge;
+	int yMax = nextBucket->yMax;
+	int initialX = nextBucket->x;
+	int invM = nextBucket->inverseSlope;
+	
+	nextBucket->yMax = bucket->yMax;
+	nextBucket->x = bucket->x;
+	nextBucket->inverseSlope = bucket->inverseSlope;
+	
+	bucket->yMax = yMax;
+	bucket->x = initialX;
+	bucket->inverseSlope = invM;
+	
+	return bucket;
+}
+
 //loop through given vertices and prep the edgeTable
 void Rasterizer::allocateEdgeTable(int n, const int x[], const int y[])
 {
 	for(int i = 0; i < n; i ++)
     {
-		cerr << " ADDING ";
 		int yMin, yMax;
         int x0 = x[i];
 		int y0 = y[i];
@@ -201,11 +175,11 @@ void Rasterizer::allocateEdgeTable(int n, const int x[], const int y[])
 			newEdge->x = initialX;
 			newEdge->inverseSlope = invM;
 			newEdge->nextEdge = nullptr;
-			
+			//first edge being added to that y position
 			if(edgeTable[yMin] == nullptr)
 				edgeTable[yMin] = newEdge;
 			else
-			{
+			{	//go to end of linked edges and add new one at the end
 				EdgeBucket *existingEdge = edgeTable[yMin];
 				while(existingEdge->nextEdge != nullptr)
 					existingEdge = existingEdge->nextEdge;
@@ -214,3 +188,28 @@ void Rasterizer::allocateEdgeTable(int n, const int x[], const int y[])
 		}
 	}
 }
+
+//debugging function
+void Rasterizer::printEdgeTable()
+{
+	for(int i = 0; i < 12; i++)
+	{
+		cerr << i << ": |";
+		EdgeBucket* bucketList = edgeTable[i];
+		if(bucketList != nullptr)
+		{
+			do
+			{
+				cerr << bucketList->yMax << " | "  
+				<< bucketList->x << " | "
+				<< bucketList->inverseSlope << " | --> || ";
+				bucketList = bucketList->nextEdge;
+			}while(bucketList != nullptr);
+		}
+		else
+			cerr << "NULL |";
+			
+		cerr << endl;
+	}
+}
+
