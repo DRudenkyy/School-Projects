@@ -36,16 +36,18 @@ Rasterizer::Rasterizer( int n, Canvas &canvas ) : n_scanlines(n), C(canvas)
 
 void Rasterizer::test()
 {
-	int x[] = {2, 7, 13, 13, 12, 10, 7, 2};
-	int y[] = {9, 7, 11, 5, 1, 3, 1, 3};
-	//int x[] = {2, 7, 13, 13, 7, 2};
+	//int x[] = {2, 7, 13, 13, 12, 10, 7, 2};
+	//int y[] = {9, 7, 11, 5, 1, 3, 1, 3};
+	int x[] = {2, 7, 13, 13, 7, 2};
 	//int y[] = {9, 7, 11, 5, 1, 3};
-	drawPolygon(8, x, y);
-	printEdgeTable();
-	
-	EdgeBucket* bucketList = edgeTable[1];
-	sortEdgeBuckets(bucketList);
-	printEdgeTable();
+	int y[] = {3, 1, 5, 11, 7, 9};
+	//drawPolygon(8, x, y);
+	initializeEdgeTable();
+	allocateEdgeTable(6, x, y);
+	sortEdgeTable();
+	//printEdgeTable();
+	processScanLines();
+	//printEdgeTable();
 }
 
 ///
@@ -67,10 +69,13 @@ void Rasterizer::test()
 ///
 void Rasterizer::drawPolygon(int n, const int x[], const int y[] )
 {
+	
 	initializeEdgeTable();
 	allocateEdgeTable(n, x, y);
 	sortEdgeTable();
+	printEdgeTable();
 	processScanLines();
+	
 }
 
 void Rasterizer::processScanLines()
@@ -93,10 +98,12 @@ void Rasterizer::processScanLines()
 					return;
 			}
 			
+			printEdgeTable();
+			
 			transferETBucketToAL(y);
-			//only sort if there are 2 or more buckets in AL
-
 			sortEdgeBuckets(activeEdgeList);
+			
+			applySlope();
 		}
 	}
 }
@@ -107,7 +114,7 @@ void Rasterizer::applySlope()
 	EdgeBucket* curr;
 	for(curr = activeEdgeList; curr->nextEdge != nullptr; curr = curr->nextEdge) 
 	{
-		curr->x += curr->yMax;
+		curr->x += curr->inverseSlope;
 	}
 }
 
@@ -134,6 +141,7 @@ void Rasterizer::drawScanLine(int y)
 	}
 }
 
+//Move all buckets from ET[y] to AL
 void Rasterizer::transferETBucketToAL(int currentY)
 {
 	//first time adding to AL
@@ -161,7 +169,12 @@ void Rasterizer::discardYMaxEdges(int currentY)
 		if(curr->yMax == currentY)
 		{
 			if(curr->nextEdge != nullptr)
+			{
+				cerr << currentY << " discarding " << activeEdgeList->yMax << " | "  
+				<< activeEdgeList->x << " | "
+				<< activeEdgeList->inverseSlope << " |";
 				activeEdgeList = activeEdgeList->nextEdge;
+			}
 				
 			delete(curr);
 		}
