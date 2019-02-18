@@ -12,6 +12,7 @@
 #include <list>
 #include <algorithm>
 #include <iostream>
+#include <math.h> 
 
 #include "Rasterizer.h"
 #include "Canvas.h"
@@ -69,6 +70,102 @@ void Rasterizer::drawPolygon(int n, const int x[], const int y[] )
 	initializeEdgeTable();
 	allocateEdgeTable(n, x, y);
 	sortEdgeTable();
+	processScanLines();
+}
+
+void Rasterizer::processScanLines()
+{
+	//Set y to the index of the first non-empty bucket list
+	int firstEdgeYval = 0;
+	while(edgeTable[firstEdgeYval] == nullptr)
+		firstEdgeYval++;
+		
+	
+	for(int y = firstEdgeYval; y < n_scanlines; y++)
+	{
+		if(edgeTable[y] != nullptr)
+		{
+			if(activeEdgeList != nullptr)
+			{
+				discardYMaxEdges(y);
+				//the last yMax was discarded and we can stop
+				if(activeEdgeList == nullptr)
+					return;
+			}
+			
+			transferETBucketToAL(y);
+			//only sort if there are 2 or more buckets in AL
+
+			sortEdgeBuckets(activeEdgeList);
+		}
+	}
+}
+
+//For each non-vertical edge in AL add 1/m to x
+void Rasterizer::applySlope()
+{
+	EdgeBucket* curr;
+	for(curr = activeEdgeList; curr->nextEdge != nullptr; curr = curr->nextEdge) 
+	{
+		curr->x += curr->yMax;
+	}
+}
+
+//Fill pixels on scan line y using pairs of x coordinates from AL
+void Rasterizer::drawScanLine(int y)
+{
+	float x1 = -1.0, x2 = -1.0;
+	EdgeBucket* curr;
+	for(curr = activeEdgeList; curr->nextEdge != nullptr; curr = curr->nextEdge) 
+	{
+		if(x1 == -1.0)
+			x1 = curr->x;	//set the inside x
+		else if(x2 == -1.0)
+			x2 = curr->x;	//set the outside x
+			
+		if(x1 != -1.0 && x2 != -1.0)
+		{
+			for(int i = (int)ceil(x1); i < (int)ceil(x2); i ++)
+				C.setPixel(i, y);
+				
+			//reset these for the next two pairs	
+			x1 = -1.0, x2 = -1.0;
+		}
+	}
+}
+
+void Rasterizer::transferETBucketToAL(int currentY)
+{
+	//first time adding to AL
+	if(activeEdgeList == nullptr)
+		activeEdgeList = edgeTable[currentY];
+	else
+	{//find last edgeBucket in AL and append next ET[y]
+		EdgeBucket *existingEdge = activeEdgeList;
+		while(existingEdge->nextEdge != nullptr)
+			existingEdge = existingEdge->nextEdge;
+		existingEdge->nextEdge = edgeTable[currentY];
+	}
+	//dereference the buckets added to AL from ET
+	edgeTable[currentY] = nullptr;
+}
+
+void Rasterizer::discardYMaxEdges(int currentY)
+{
+	//I believe I will only be deleting the heads of active list
+	//and therefore won't have to include a previous node location
+	//EdgeBucket* prev = activeEdgeList;
+	EdgeBucket* curr;
+	for(curr = activeEdgeList; curr->nextEdge != nullptr; curr = curr->nextEdge) 
+	{
+		if(curr->yMax == currentY)
+		{
+			if(curr->nextEdge != nullptr)
+				activeEdgeList = activeEdgeList->nextEdge;
+				
+			delete(curr);
+		}
+	}
 }
 
 //initialize edge table
@@ -87,11 +184,7 @@ void Rasterizer::sortEdgeTable()
 		EdgeBucket* bucketList = edgeTable[i];
 		if(bucketList != nullptr)
 		{
-			//only sort if there are 2 or more buckets per array
-			if(bucketList->nextEdge != nullptr)
-			{
-				sortEdgeBuckets(bucketList);
-			}
+			sortEdgeBuckets(bucketList);
 		}
 	}
 }
@@ -99,6 +192,10 @@ void Rasterizer::sortEdgeTable()
 //sorts edge bucket lists by x value then inverse slope 
 EdgeBucket* Rasterizer::sortEdgeBuckets(EdgeBucket* head) 
 {
+	//don't sort if bucket is empty or only has one edge
+	if(head == nullptr || head->nextEdge == nullptr)
+		return head;
+		
     EdgeBucket * curr;
     for(bool didSwap = true; didSwap; ) 
     {

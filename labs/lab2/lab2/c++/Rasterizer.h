@@ -90,6 +90,16 @@ public:
     
     EdgeBucket* swapBucketValues(EdgeBucket* bucket);
     
+    void processScanLines();
+    
+    void drawScanLine(int y);
+    
+    void discardYMaxEdges(int currentY);
+    
+    void transferETBucketToAL(int currentY);
+    
+    void applySlope();
+    
     void printEdgeTable();
     void test();
     
