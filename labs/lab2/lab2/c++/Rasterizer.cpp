@@ -34,6 +34,14 @@ Rasterizer::Rasterizer( int n, Canvas &canvas ) : n_scanlines(n), C(canvas)
 	activeEdgeList = nullptr;
 }
 
+void Rasterizer::test()
+{
+	int x[] = {2, 7, 13, 13, 7, 2};
+	int y[] = {3, 1, 5, 11, 7, 9};
+	drawPolygon(6, x, y);
+	printEdgeTable();
+}
+
 ///
 // Draw a filled polygon.
 //
@@ -53,16 +61,88 @@ Rasterizer::Rasterizer( int n, Canvas &canvas ) : n_scanlines(n), C(canvas)
 ///
 void Rasterizer::drawPolygon(int n, const int x[], const int y[] )
 {
-	//initialize edge table and active list
+	//initialize edge table
 	initializeEdgeTable();
-			
+	allocateEdgeTable(n, x, y);
+	sortEdgeTable();
+	
 }
 
+void Rasterizer::printEdgeTable()
+{
+	for(int i = 0; i < 12; i++)
+		cout << i << edgeTable[i];
+}
+
+//initialize edge table
 void Rasterizer::initializeEdgeTable()
 {
     //set rows initially to empty
     for(int i = 0; i < n_scanlines; i++)
-	edgeTable[i] = nullptr;
+		edgeTable[i] = nullptr;
+}
+
+//sort the edgeTable
+void Rasterizer::sortEdgeTable()
+{
+	for(int i = 0; i < n_scanlines; i++)
+	{
+		EdgeBucket* bucketList = edgeTable[i];
+		if(bucketList != nullptr)
+		{
+			if(bucketList->nextEdge != nullptr)
+			{
+				EdgeBucket* sortedBucketList = sortEdgeBuckets(bucketList);
+				delete(bucketList);
+				edgeTable[i] = sortedBucketList;
+			}
+		}
+	}
+}
+
+EdgeBucket* Rasterizer::sortEdgeBuckets(EdgeBucket* head) 
+{
+    EdgeBucket *top = nullptr; // first EdgeBucket we will return this value
+    EdgeBucket *current = nullptr;
+    bool sorted = false;
+    while (sorted == false) 
+    {
+        // we are going to look for the lowest value in the list
+        EdgeBucket *parent = head;
+        EdgeBucket *lowparent = head; // we need this because list is only linked forward
+        EdgeBucket *low = head; // this will end up with the lowest EdgeBucket
+        sorted = true;
+        do 
+        {
+            // find the lowest valued key
+            EdgeBucket* next = parent->nextEdge;
+            if ( (parent->x > next->x)	//first sort on x 
+            || ( (parent->x == next->x) && //if xs are equal, sort by inverseSlope
+				 (parent->inverseSlope > next->inverseSlope) ) ) 
+            {
+                lowparent = parent;
+                low = next;
+                sorted = false;
+			}
+            parent = parent->nextEdge;
+		} while (parent->nextEdge != nullptr);
+		
+        if (current != nullptr) // first time current == nullptr
+            current->nextEdge = low;
+	
+        // remove the lowest item from the list and reconnect the list
+        // basically you are forming two lists, one with the sorted EdgeBuckets 
+        // and one with the remaining unsorted EdgeBuckets
+        current = low;
+        if (current == head) { head = current->nextEdge; }
+        lowparent->nextEdge = low->nextEdge;
+        current->nextEdge = nullptr;
+        if (top == nullptr) {
+            top = current;
+            }
+        };
+    current->nextEdge = head;
+    return top;
 }
 
 //loop through giiven vertices and prep the edgeTable
