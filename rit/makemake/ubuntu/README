@@ -1,0 +1,39 @@
+This directory contains a new version of "makemake". It is derived
+from the version by Ken Reek but updated to use the Standard Template
+Library. The intention is to release the source code to students as an
+example of C++ code.
+
+Some changes in this version:
+
+Support for SGI machines has been eliminated.
+
+There is only one version - the program checks the first character of
+the root name of the executable for 'g' and, if so, produces a
+makefile for the gnu compiler. Otherwise it produces a makefile for
+the sun compiler. The executables for makemake and gmakemake are
+identical.
+
+The current version produces makefiles that do not use default rules
+or variables. Everything is explicit in the makefile. This will
+eliminate the problem of using make (rather than gmake) on a gnu
+compilation and not having debugging symbols. The produced makefiles
+should work identically with make or gmake.
+
+The -lm loader flag is not emitted for C++ links. It is for C links.
+
+A file header.mak will still replace some lines in the makefile with
+the contents of the this file.
+
+A file programs.mak will replace the automatically generated
+dependencies for executables so you can specify which files to link
+and what the name of the executable is. If you do not use this option
+then an executable will be built for each source file containing a
+main function including every .o file without a main function.
+
+Not done yet (or ever):
+
+check include files -I and properly put path in dependencies
+
+Currently .o files without a corresponding source file do not
+work. What about .o files without a corresponding .c or .cpp file?
+(check for main?)

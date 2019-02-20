@@ -1,0 +1,22 @@
+Add include files -I and properly put path in dependencies
+  dependencies for specific includes in other directories? (only "")
+
+What about .o files without a corresponding .c or .cpp file? (check for main?)
+
+Add a dependencies file -> exe: m.o x.o
+  Properly handle .exe files on windows - detect platform in gmakemake?
+  have a wmakemake <---
+  What about non-gnu compilers on windows?
+  Perhaps a -windows flag?
+  Check if invoked with .exe extension? - doesn't work
+
+Make type of build depend on name of file makemake or gmakemake or smakemake
+
+Handle .S files using cpp to make a .s file? (with -s flag)
+
+Separate flage between gnu and CC so compilers and linkers do not share flags?
+
+-s make .s files from .S files using cpp
+-w assume executables have .exe suffix
+-g use gnu compilers
+-I include directories with -I flag and include dependencies???

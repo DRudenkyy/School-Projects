@@ -1,0 +1,124 @@
+.\" $com lwroff /home/fac/kar/lib/tmac.an $@
+.ll 6.5i
+.po 1i
+.TH MAKEMAKE 1R "R. I. T."
+.SH NAME
+makemake, gmakemake \- construct a makefile for C and C++ programs
+.SH SYNOPSIS
+.B makemake
+[
+.I options
+]
+[ file ...  ]
+.br
+.B gmakemake
+[
+.I options
+]
+[ file ...  ]
+.SH DESCRIPTION
+.I Makemake
+reads the directory in which it is run to find C and C++ source and header files
+and creates a makefile to create the program(s) comprised of these files.
+The makefile is produced on the standard output.
+It has a target for each source file that appears to contain a
+main function, that is, which contains the pattern
+.sp .35
+.ti +.5i
+\&(^|WS) "int" WS+ "main" WS* "("
+.sp .35
+not contained in a //-style or /* ... */-style comment.
+.PP
+.I Makemake
+also determines the dependencies among the source and header files
+and includes this information in the makefile.
+Files included with
+.B "#include ""<...>"""
+are considered library files that are
+unlikely to change, and so are not added to the dependencies.
+.PP
+By default, the
+.B cc
+compiler is used for C files, and
+.B CC
+is used for C++.
+In
+.IR gmakemake ,
+.B gcc
+and
+.B g++
+are used instead.
+Various compilation flags are defined by default;
+these and the choice of compiler can be overridden by supplying a file
+containing the desired options.
+By default this file is called
+.BR header.mak ,
+but the
+.B -header
+option can be used to designate another file instead.
+.SH OPTIONS
+.TP "\w'-header   x   'u"
+.BI -header "  x"
+specifies that the file named
+.I x
+should be used instead of
+.B header.mak .
+.TP
+.B -no-header
+says not to use a header file, even if
+.B header.mak
+exists.
+.TP
+.B -no-debug
+causes the
+.B -g
+option to be omitted from the standard flags when debugging is not desired.
+.TP
+.B -d
+prints
+.I makemake
+debugging information, and is of little practical use.
+.PP
+If any file arguments are given, they are used as the list of source files
+rather than the directory contents.
+The intent is to be able to construct makefiles for subsets of the files
+in a directory.
+.SH DIAGNOSTICS
+.PP
+If none of the source files appear to contain a main function,
+a warning is printed and
+the resulting makefile will have no targets to build.
+.PP
+If filenames are given on the command line but are not C or C++ source files,
+a warning is printed and they are ignored.
+.SH CAVEATS
+.IP 1)
+.I Makemake
+.B "is not"
+and
+.B "was never intended as"
+a general purpose makefile constructor.
+Attempting to use it outside the narrow context
+for which it was designed is begging for problems.
+.IP 2)
+If you use the
+.B header.mak
+to change the compiler, be warned that some things may not work right.
+For example, retargeting
+.IR gmakemake -generated
+makefiles to use CC by redefining
+.B CCC
+is asking for trouble if your program uses templates.
+.SH AUTHOR
+K. Reek, based on a shell script by J. Heliotis
+.SH FILES
+/usr/local/bin/makemake
+.br
+/usr/local/bin/gmakemake
+.SH BUGS
+Report bugs of the form ``it doesn't
+work for
+.IR "language X" ''
+to
+.BR /dev/null .
+Report other bugs to K. Reek (475-6155).

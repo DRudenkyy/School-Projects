@@ -1,0 +1,4 @@
+add include files -I and properly put path in dependencies
+what about .o files without a corresponding .c or .cpp file? (check for main?)
+add a dependencies file -> exe: m.o x.o
+make type of build depend on name of file makemake or gmakemake or smakemake
