@@ -48,6 +48,17 @@ public:
     ///
     int clipPolygon( int in, const Vertex inV[], Vertex outV[],
 		     Vertex ll, Vertex ur );
+		     
+	// To find orientation of ordered triplet (v1, v2, v3). 
+	// The function returns following values 
+	// 0 --> p, q and r are colinear 
+	// 1 --> Clockwise 
+	// 2 --> Counterclockwise 
+	int orientation(Vertex v1, Vertex v2, Vertex v3);
+
+	//initializes vertices before clipping by orienting input vertices
+	//to change to clockwise orientation if counterclockwise originally
+	void initializeOutV(int in, const Vertex inV[], Vertex outV[], bool cc);
 
 };
 

@@ -11,6 +11,9 @@
 
 #include "Vertex.h"
 #include "Clipper.h"
+#include <iostream>
+
+using namespace std;
 
 ///
 // Simple module that performs clipping
@@ -45,8 +48,59 @@ Clipper::Clipper() {
 int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
                           Vertex ll, Vertex ur )
 {
-    // YOUR CODE GOES HERE
+	bool clockwise = true;
+	
+	if(orientation(inV[0], inV[1], inV[2]) == 2)
+		clockwise = false;
+	else if(orientation(inV[0], inV[1], inV[2]) == 0)
+		cerr << "shouldn't happen";
+				
+	initializeOutV(in, inV, outV, clockwise);
+	
+	
+    return( in );  // remember to return the outgoing vertex count!
 
-    return( 0 );  // remember to return the outgoing vertex count!
+}
+	//for(int i = 0; i < in; i++)
+	//{
+		//cerr << i << ": (" << outV[i].x << ", " << outV[i].y << ")" << endl;
+	//}
+	//cerr << endl;
 
+// To find orientation of ordered triplet (v1, v2, v3). 
+// The function returns following values 
+// 0 --> p, q and r are colinear 
+// 1 --> Clockwise 
+// 2 --> Counterclockwise 
+int Clipper::orientation(Vertex v1, Vertex v2, Vertex v3) 
+{ 
+    int val = (v2.y - v1.y) * (v3.x - v2.x) - 
+              (v2.x - v1.x) * (v3.y - v2.y); 
+  
+    if (val == 0) return 0;  // colinear 
+  
+    return (val > 0)? 1: 2; // clock or counterclock wise 
+} 
+
+//initializes vertices before clipping by orienting input vertices
+//to change to clockwise orientation if counterclockwise originally
+void Clipper::initializeOutV(int in, const Vertex inV[], Vertex outV[], bool cc)
+{
+	//first vertex stays the same regardless of orientation
+	outV[0] = inV[0];
+
+	if(cc)
+	{
+		for(int i = 1; i < in; i++)
+		{
+			outV[i] = inV[i];
+		}
+	}
+	else
+	{
+		for(int i = in - 1; i > 0; i--)
+		{
+			outV[i] = inV[in - i];
+		}
+	}
 }
