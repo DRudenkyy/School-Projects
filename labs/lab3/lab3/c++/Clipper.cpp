@@ -48,6 +48,8 @@ Clipper::Clipper() {
 int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
                           Vertex ll, Vertex ur )
 {
+	vertexList = {};
+	
 	bool clockwise = true;
 	
 	setNewClipParams(ll, ur);

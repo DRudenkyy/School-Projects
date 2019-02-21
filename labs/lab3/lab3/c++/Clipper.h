@@ -13,6 +13,7 @@
 #define _CLIPPER_H_
 
 #include "Vertex.h"
+#include <list>
 
 ///
 // Simple module that performs clipping
@@ -35,6 +36,7 @@ public:
 	int clip_xmax = 300;
 	int clip_ymax = 300;
 	
+	std::list<Vertex> vertexList = {};
 
     ///
     // Constructor
