@@ -36,6 +36,7 @@ using namespace std;
 ///
 
 // our clipping regions (ll and ur corners)
+Vertex clip0[2] = { {  100, 100 }, {  200, 200 } };
 
 Vertex clip1[2] = { {  10, 110 }, {  50, 150 } };
 Vertex clip2[2] = { {  30,  30 }, {  70,  80 } };
@@ -215,6 +216,8 @@ void makePolygons( Canvas &C ) {
     ///
     // first polygon:  entirely within region
     ///
+    
+    clipper.tester(clip0[0], clip0[1]);
 
     C.setColor( 1.0f, 0.0f, 0.0f );    // red
     nv[0] = clipper.clipPolygon( 4, quad1, tmp, clip1[0], clip1[1] );

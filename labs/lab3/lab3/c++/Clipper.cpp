@@ -50,22 +50,66 @@ int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
 {
 	bool clockwise = true;
 	
+	setNewClipParams(ll, ur);
+
+	Vertex orientedVertices[in];
+	
 	if(orientation(inV[0], inV[1], inV[2]) == 2)
 		clockwise = false;
 	else if(orientation(inV[0], inV[1], inV[2]) == 0)
 		cerr << "shouldn't happen";
 				
-	initializeOutV(in, inV, outV, clockwise);
+	orientInitialVertices(in, inV, orientedVertices, clockwise);
 	
 	
     return( in );  // remember to return the outgoing vertex count!
 
 }
-	//for(int i = 0; i < in; i++)
-	//{
-		//cerr << i << ": (" << outV[i].x << ", " << outV[i].y << ")" << endl;
-	//}
-	//cerr << endl;
+
+void Clipper::tester(Vertex ll, Vertex ur)
+{	
+	setNewClipParams(ll, ur);
+	Vertex vInside = {150, 150};
+	Vertex vAbove = {150, 250};
+	Vertex vBelow = {150, 50};
+	Vertex vRight = {250, 150};
+	Vertex vLeft = {50, 150};
+	
+	cerr << computeCode(vInside) << endl;
+	cerr << computeCode(vAbove) << endl;
+	cerr << computeCode(vBelow) << endl;
+	cerr << computeCode(vRight) << endl;
+	cerr << computeCode(vLeft) << endl;
+
+
+}
+
+//set the new global clipping parameters
+void Clipper::setNewClipParams(Vertex ll, Vertex ur)
+{
+	clip_xmin = ll.x;
+	clip_ymin = ll.y;
+	clip_xmax = ur.x;
+	clip_ymax = ur.y;
+}
+
+// Function to compute region code for a vertex(x, y) 
+int Clipper::computeCode(Vertex v) 
+{ 
+    // initialized as being inside  
+    int code = INSIDE;
+  
+    if (v.x < clip_xmin)       // to the left of rectangle 
+        code |= LEFT; 
+    else if (v.x > clip_xmax)  // to the right of rectangle 
+        code |= RIGHT; 
+    if (v.y < clip_ymin)       // below the rectangle 
+        code |= BOTTOM; 
+    else if (v.y > clip_ymax)  // above the rectangle 
+        code |= TOP; 
+  
+    return code; 
+}
 
 // To find orientation of ordered triplet (v1, v2, v3). 
 // The function returns following values 
@@ -80,27 +124,34 @@ int Clipper::orientation(Vertex v1, Vertex v2, Vertex v3)
     if (val == 0) return 0;  // colinear 
   
     return (val > 0)? 1: 2; // clock or counterclock wise 
-} 
+}
 
 //initializes vertices before clipping by orienting input vertices
 //to change to clockwise orientation if counterclockwise originally
-void Clipper::initializeOutV(int in, const Vertex inV[], Vertex outV[], bool cc)
+void Clipper::orientInitialVertices(int in, const Vertex inV[], 
+											Vertex oV[], bool cc)
 {
 	//first vertex stays the same regardless of orientation
-	outV[0] = inV[0];
+	oV[0] = inV[0];
 
 	if(cc)
 	{
 		for(int i = 1; i < in; i++)
-		{
-			outV[i] = inV[i];
-		}
+			oV[i] = inV[i];
 	}
 	else
 	{
 		for(int i = in - 1; i > 0; i--)
-		{
-			outV[i] = inV[in - i];
-		}
+			oV[i] = inV[in - i];
 	}
+}
+
+void Clipper::printOutV(Vertex arrayV[], int length)
+{
+	for(int i = 0; i < length; i++)
+	{
+		cerr << i << ": (" << arrayV[i].x << ", " << arrayV[i].y 
+														<< ")" << endl;
+	}
+	cerr << endl;
 }

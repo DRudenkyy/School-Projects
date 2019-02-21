@@ -22,6 +22,20 @@ class Clipper {
 
 public:
 
+	//defining region codes 
+	const int INSIDE = 0; // 0000 
+	const int LEFT = 1;   // 0001 
+	const int RIGHT = 2;  // 0010 
+	const int BOTTOM = 4; // 0100 
+	const int TOP = 8;    // 1000
+	
+	//defining clipping parameters
+	int clip_xmin = 0;
+	int clip_ymin = 0;
+	int clip_xmax = 300;
+	int clip_ymax = 300;
+	
+
     ///
     // Constructor
     ///
@@ -58,7 +72,18 @@ public:
 
 	//initializes vertices before clipping by orienting input vertices
 	//to change to clockwise orientation if counterclockwise originally
-	void initializeOutV(int in, const Vertex inV[], Vertex outV[], bool cc);
+	void orientInitialVertices(int in, const Vertex inV[], Vertex oV[], bool cc);
+	
+	//get the bitmasked code of a given vertex
+	int computeCode(Vertex v);
+	
+	//set the new global clipping parameters
+	void setNewClipParams(Vertex ll, Vertex ur);
+
+	//debug function for printing vertex array
+	void printOutV(Vertex arrayV[], int length);
+
+	void tester(Vertex ll, Vertex ur);
 
 };
 
