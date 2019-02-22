@@ -1,0 +1,593 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+            "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Project 1:  Midterm</title>
+  <link rel="stylesheet" type="text/css" href="/~cscix10/css/main.css">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="robots" content="nofollow,noarchive">
+</head>
+<body>
+
+<h1>Project 1:  Midterm</h1>
+
+<p>
+<em>
+Last updated
+2018/10/12 11:58:23
+
+</em>
+</p>
+
+<p><em>Update history:</em></p>
+
+<table>
+
+<tr>
+   <td><code>2018/10/12:</code></td>
+   <td><code>initial version</code></td>
+</tr>
+
+</table>
+
+<hr>
+
+<ol>
+<li><a href="#intro">Introduction</a>
+<li><a href="#env">Programming Environment</a>
+<li><a href="#impl">Routines to Implement</a>
+<li><a href="#files">Supplied Files</a>
+<li><a href="#submit">What to Submit</a>
+<li><a href="#grade">Grading</a>
+<li><a href="#notes">Notes</a>
+</ol>
+
+<hr>
+
+<a name="intro"></a>
+<h2>1. Introduction</h2>
+
+<p>
+In this project, you will implement the complete 2D pipeline as
+presented in class using routines written for previous assignments.
+This project is in lieu of a traditional midterm exam.
+</p>
+
+<p>
+This assignment has the following goals:
+</p>
+
+<ul>
+
+<li>
+<p>
+Test your knowledge of the components and algorithms of 2D drawing
+</p>
+
+<li>
+<p>
+Combine existing code into a complete graphics pipeline application
+</p>
+
+</ul>
+
+<hr>
+
+<a name="env"></a>
+<h2>2. Programming Environment</h2>
+
+<p>
+As with the previous assignments, the programming environment that you
+will use for this project is a set of simple modules with
+implementations in C and C++.
+You are free to use either of the implementations.
+The modules include:
+</p>
+
+<ul>
+
+<li>
+<p>
+<code>Buffers</code> - a support module providing OpenGL vertex and
+element buffer support.
+</p>
+
+<li>
+<p>
+<code>Canvas</code> - a simple 2D canvas that allows the ability to
+set a pixel.
+</p>
+
+<li>
+<p>
+<code>Pipeline</code> - the module containing the methods you must implement
+</p>
+
+<li>
+<p>
+<code>ShaderSetup</code> - a support module that handles shader program
+compilation and linking.
+</p>
+
+<li>
+<p>
+<code>Vertex</code> - a module that describes the structure of a vertex.
+</p>
+
+<li>
+<p>
+<code>midtermMain</code> - the main function for the application
+</p>
+
+<li>
+<p>
+<code>shader.vert</code>, <code>shader.frag</code> -
+simple GLSL 1.50 shaders.
+</p>
+
+<li>
+<p>
+<code>alt.vert</code>, <code>alt.frag</code> -
+simple GLSL 1.20 shaders.
+</p>
+
+</ul>
+
+<p>
+The C version includes a module named
+<code>FloatVector</code> which provides an extensible vector holding
+floating-point values.
+Both versions include a file named <code>header.mak</code>
+for use with the <code>gmakemake</code> program on our systems to create
+a <code>Makefile</code> to simplify compilation and linking of the
+program.
+</p>
+
+<p>
+See the <a href="#files"><em>Supplied Files</em></a> section (below)
+for details on how to download the framework.
+</p>
+
+<p>
+It is expected that you have working versions of the functions
+<code>drawPolygon()</code> and <code>clipPolygon()</code> which you wrote
+for previous assignments.
+It is particularly important that you have a working
+<code>drawPolygon()</code> as you will not be able to generate
+any output without it.
+</p>
+
+<p>
+You may be able to drop your <code>Rasterizer</code> and
+<code>Clipper</code> modules from labs 2 and 3 into your solution
+directly with only minor changes.
+Remember that the lab 2 framework used integer coordinate values, while
+the lab 3 framework (and this project's framework) use floating-point
+coordinate values, so there may be some "tweaking" necessary in places.
+</p>
+
+<p>
+<strong>
+If you do not have a working version of <code>drawPolygon()</code>,
+</strong>
+there is a method within the <code>Canvas</code> module named
+<code>drawOutline()</code> that you can use for the project.
+However, this routine will not fill in the polygon - it only draws
+the outline.
+<strong>
+You should only use this routine if you do not have a working version
+of the <code>drawPolygon()</code> method within your
+<code>Rasterizer</code>.
+</strong>
+
+<p>
+You will need to perform matrix manipulations in your code.
+You are welcome to use auxiliary libraries from the Web for matrix
+manipulation (or alternately, you can write your own).
+See the <a href="#notes"><em>Notes</em></a> section (below) for links to
+some freely-available matrix packages.
+</p>
+
+<hr>
+
+<a name="impl"></a>
+<h2>3. Routines to Implement</h2>
+
+<p>
+The only provided module that you will need to modify is
+<code>Pipeline</code>.
+You will add your implementations of the methods in this module.
+You are free to expand this module by adding other methods and
+data members, as needed.
+</p>
+
+<p>
+You will find the list of methods that must be implemented in the
+<code>Pipeline</code> declaration.
+The midterm lecture notes presented in class also describe these methods.
+</p>
+
+<p>
+You are free to create any additional auxiliary modules or classes that
+you might need.
+However, you should not modify the code for
+<code>Canvas</code> or
+<code>midtermMain</code>.
+You are encouraged to re-use the <code>Rasterizer</code> and
+<code>Clipper</code> modules you developed in earlier assignments, or you
+may choose to re-implement those features for this assignment.
+</p>
+
+<p>
+The test driver program runs four separate tests of your implementation:
+basic polygon drawing; use of a non-standard clip window; model
+transformations; and non-standard viewports.
+Its output should look much like these samples:
+</p>
+
+<center>
+<table border="0">
+<tr>
+<td align="center">
+<img src="Screen1.png" height="200" width="208" border="0">
+<br>Basic polygon test
+</td>
+<td>&nbsp;</td>
+<td align="center">
+<img src="Screen2.png" height="200" width="208" border="0">
+<br>Non-standard clipping test
+</td>
+<td>&nbsp;</td>
+<td align="center">
+<img src="Screen3.png" height="200" width="208" border="0">
+<br>Model transformation test
+</td>
+<td>&nbsp;</td>
+<td align="center">
+<img src="Screen4.png" height="200" width="208" border="0">
+<br>Non-standard viewport test
+</td>
+</tr>
+</table>
+</center>
+
+<p>
+Tests can be selected by clicking the left mouse button, or through
+keyboard input.
+Each click of the mouse moves to the next test in sequence.
+The individual tests can be selected as follows:
+characters
+<code>P</code> and <code>1</code> select the basic polygon test,
+<code>C</code> and <code>2</code> select the clipping test,
+<code>T</code> and <code>3</code> select the transformation test, and
+<code>V</code> and <code>4</code> select the viewport test.
+</p>
+
+<p>
+By default, the driver starts with image #1 (the basic polygon test).
+You can supply an integer in the range 1-4 on the command line which
+indicates which image to start with; e.g., to start with the viewport
+test, run the program as
+</p>
+
+<blockquote><pre>
+./midtermMain 4
+</pre></blockquote>
+
+<p>
+If you provide an integer outside that range, or something other than an
+integer, the program silently defaults to image #1.
+</p>
+
+<hr>
+
+<a name="files"></a>
+<h2>4. Supplied Files</h2>
+
+<p>
+The programming framework for this assignment is available as a ZIP archive.
+You can either download the
+<a href="project1.zip"><code>project1.zip</code></a>
+archive directly, or retrieve it by executing the command
+</p>
+
+<blockquote><pre>
+get  cscix10  project1
+</pre></blockquote>
+
+<p>
+on any CS Ubuntu<sup><a href="#ftn">&reg;</a></sup> system.
+</p>
+
+<p>
+The ZIP archive contains a folder named <code>project1</code>; under that
+are subfolders <code>c</code>, <code>c++</code>, and <code>misc</code>,
+which contain the obvious things.
+In the C and C++ folders you'll find a file named <code>header.mak</code>,
+for use on the CS systems to help you generate a <code>Makefile</code>
+that will compile and link your program with the libraries used by the
+framework.
+See the contents of <code>header.mak</code> for details on how to do this.
+The <code>misc</code> folder contains a shellscript named
+<code>compmac</code> which will compile and link the code on Mac systems.
+</p>
+
+<hr>
+
+<a name="submit"></a>
+<h2>5. What to Submit</h2>
+
+<p>
+Submit your solution using <code>try</code> on the CS systems.
+You must submit your modified <code>Pipeline</code> file(s) along with any
+other supporting files you are using.
+You may also include a <code>README</code> file if you wish.
+Do not submit the <code>Canvas</code> and <code>midtermMain</code>
+files.
+</p>
+
+<p>
+If you are working in C++, your implementation must be in a file named
+<code>Pipeline.cpp</code>.
+If your implementation requires making changes to the
+<code>Pipeline.h</code> file (e.g., you have added data members or
+member functions to the class declaration), you should submit that file
+along with <code>Pipeline.cpp</code>.
+If you make changes to the <code>header.mak</code> file, you may submit
+your modified file as well.
+</p>
+
+<p>
+Similarly, if you are working in C, your implementation must be in a file
+named <code>Pipeline.c</code>.
+Again, if your implementation requires making changes to the
+<code>Pipeline.h</code> file, you should submit that file
+along with <code>Pipeline.c</code>.
+If you make changes to the <code>header.mak</code> file, you may submit
+your modified file as well.
+</p>
+
+<p>
+If you are using one of the matrix libraries described below,
+please do not submit it.
+If you are working in C, the GSL libraries are installed on the CS
+systems, and the <code>header.mak</code> file automatically links against
+that library.
+</p>
+
+<p>
+For C++, if you are using the Matrix TCL Pro package, the three files
+<code>cmatrix</code>,
+<code>matrix.cc</code>, and <code>matrix2.hxx</code> files will be in
+the working directory, and you should use the following statement to
+include them in your code:
+</p>
+
+<blockquote><pre>
+#include "cmatrix"
+</pre></blockquote>
+
+<p>
+If you are using GLM, include the main GLM header file this way:
+</p>
+
+<blockquote><pre>
+#include &lt;glm/glm.hpp&gt;
+</pre></blockquote>
+
+<p>
+or, if you prefer, you may include individual GLM header files by
+functionality:
+</p>
+
+<blockquote><pre>
+#include &lt;glm/vec3.hpp&gt;
+#include &lt;glm/mat3.hpp&gt;
+#include &lt;glm/matrix.hpp&gt;
+</pre></blockquote>
+
+<p>
+etc.
+If you are using an external matrix library <strong>other than</strong>
+the ones described in the <a href="#notes"><em>Notes</em></a> section
+(below), <strong>or</strong> you are using a modified version of one
+of those libraries, you must submit those files with your submission.
+Make sure that the
+matrix library files are included directly from the working directory (as
+you can only submit files, not directory hierarchies, using
+<code>try</code>).
+</p>
+
+<p>
+Turn in only your implementation file(s) described above
+and an optional <code>README</code> file using this command:
+</p>
+
+<blockquote><pre>
+try  grd-x10  project1  <em>files</em>
+</pre></blockquote>
+
+<p>
+where <code><em>files</em></code> is the list of file names you are
+submitting.
+</p>
+
+<p>
+The 'try' scripts will reject submissions that attempt to turn in any
+of the other files from the project framework.
+</p>
+
+<p>
+You may optionally submit a modified
+<code>header.mak</code> file and/or a modified <code>Pipeline.h</code>
+file.
+The modified <code>header.mak</code> should be based on the version found
+in the ZIP archive.
+If you do not submit either of these files, the <code>try</code> scripts
+will use the version found in the framework.
+</p>
+
+<p>
+The minimum acceptance test is that your code must be complete - that is,
+it must compile and link cleanly when submitted.
+Submissions <em>will not be accepted</em> if they fail to
+compile and link cleanly.
+(Warning messages from the compiler are acceptable, but not fatal
+errors.)
+</p>
+
+<p>
+Finally, you can verify that your submission was archived with the
+command
+</p>
+
+<blockquote><pre>
+try  -q  grd-x10  project1
+</pre></blockquote>
+
+<hr>
+
+<a name="grade"></a>
+<h2>6. Grading</h2>
+
+<p>
+Your submission will be graded out of 100 points, and will earn points as
+follows:
+</p>
+
+<ul>
+<li>10 points for submitting code that compiles, runs, and produces a window.
+<li>20 points for basic polygon drawing
+<ul>
+<li><em>Note:  reduced to 8 points</em> if you are using the supplied
+<code>drawOutline()</code> function
+</ul>
+<li>20 points for model transformations
+<li>20 points for non-standard clipping
+<li>20 points for non-standard viewport
+<li>10 points for style and documentation
+</ul>
+
+<hr>
+
+<a name="notes"></a>
+<h2>7. Notes</h2>
+
+<p>
+You are welcome to use auxiliary libraries from the Web for matrix
+manipulation (or alternately, you can write your own).
+There are several good libraries available for these languages; here
+are the ones we recommend, as all three are available on the CS lab
+machines (of course, you are free to use whatever
+library you like, as long as it is freely available):
+</p>
+
+<ul>
+
+<li>
+<p>
+C:
+<a href="http://www.gnu.org/software/gsl/">
+The GNU Scientific Library</a>
+</p>
+<p>
+GSL version 2.4 is installed on the CS lab machines; the
+<code>header.mak</code> supplied with the framework is set up to
+automatically link your code using this library.
+</p>
+
+<li>
+<p>
+C++:
+<a href="http://www.techsoftpl.com/matrix/">
+Matrix TCL Pro</a>
+</p>
+<p>
+Matrix TCL Pro version 2.2 is available in the course account on the CS
+systems, in the
+<a href="/~cscix10/lib/matclpro/"><code>~cscix10/lib/matclpro</code></a>
+directory.
+To use it, copy the three files from the 
+<a href="/~cscix10/lib/matclpro/include/">
+<code>~cscix10/lib/matclpro/include</code></a>
+directory into your working directory, and include the
+<code>cmatrix</code> file using the <code>#include</code>
+format shown in the
+<a href="#submit"><em>What To Submit</em></a> section (above).
+</p>
+
+<li>
+<p>
+C++:
+<a href="http://glm.g-truc.net/0.9.8/">GLM</a>
+</p>
+<p>
+GLM 0.9.9-a2 is installed on the CS lab machines; for greatest
+compatibility, you may wish to install that version on your own system.
+</p>
+</ul>
+
+<p>
+For convenience, archive files for the Matrix TCL Pro 2.2 and GLM 0.9.9-a2
+can be found in the course account; see the directory
+<a href="/~cscix10/lib/archives/"><code>~cscix10/lib/archives</code></a>
+for these files.
+</p>
+
+<p>
+If you are using one of these libraries unmodified, please do not submit
+them along with your solutions; the <code>try</code> scripts will provide
+a copy of Matrix TCL Pro in the working directory for C++ submissions,
+and the other libraries are installed in standard places on the lab
+machines.
+However, if you are using a modified version of one of these libraries or a
+different matrix library, you <strong>must</strong> submit your library
+along with your solution.
+</p>
+
+<p>
+Refer back to the
+<a href="/~cscix10/labs/protected/hello/">"Hello, OpenGL!" programming assignment</a>
+for information about obtaining and installing the JOGL, GLFW and/or GLEW
+libraries.
+</p>
+
+<p>
+Don't wait until the last minute to submit things!
+You may, in fact, want to submit even a partially-working solution as you
+work on it - there is no penalty for making multiple submissions, and
+this will help ensure that you get <em>something</em> submitted for this
+assignment.
+</p>
+
+<p>
+Do not make any changes to the function prototypes.
+This means that your implementations must match the prototypes exactly in
+terms of number, types, and order of parameters.
+The reason for this is that the test programs assume that your
+implementations match those prototypes; if you make changes, there will
+be compilation errors, and even if the test programs link, they almost
+certainly won't execute correctly (which means you'll lose substantial
+amounts of credit for incorrect program performance).
+</p>
+
+<a name="altfiles"></a>
+<p>
+The <code>shader.vert</code> and <code>shader.frag</code> files supplied
+with the framework require GLSL version 1.50, which is only available
+with OpenGL 3.2 or newer.
+If you are attempting to develop your code on a system which doesn't have
+a new-enough version of GLSL, you'll get error messages when these files
+are compiled during the execution of your code.
+The driver program will automatically "fall back" to the alternate
+shaders if GLSL 1.50 isn't available.
+</p>
+
+<hr>
+<a name="ftn"></a>
+<em>
+<!--#include virtual="/~wrc/includes/tm.ubuntu"-->
+</em>
+<hr>
+</body>
+</html>
