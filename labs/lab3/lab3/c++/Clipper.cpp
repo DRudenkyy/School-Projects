@@ -48,12 +48,14 @@ Clipper::Clipper() {
 int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
                           Vertex ll, Vertex ur )
 {
+	//set main list to null
 	vertexList = {};
 	
 	bool clockwise = true;
 	
 	setNewClipParams(ll, ur);
 
+	//this list will orient the original vertices to get a clockwise orientation
 	Vertex orientedVertices[in];
 	
 	if(orientation(inV[0], inV[1], inV[2]) == 2)

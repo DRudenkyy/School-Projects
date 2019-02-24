@@ -36,6 +36,8 @@ public:
 	int clip_xmax = 300;
 	int clip_ymax = 300;
 	
+	//main list that will be built up as initial vertices are processed 
+	//against the clip area and 
 	std::list<Vertex> vertexList = {};
 
     ///
