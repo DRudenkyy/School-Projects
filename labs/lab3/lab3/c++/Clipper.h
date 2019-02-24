@@ -19,26 +19,24 @@
 // Simple module that performs clipping
 ///
 
+//struct that represents a single boundary/edge to be clipped at
+typedef struct st_Boundary {
+    Vertex lower;
+    Vertex upper;
+} Boundary;
+
 class Clipper {
 
 public:
-
-	//defining region codes 
-	const int INSIDE = 0; // 0000 
-	const int LEFT = 1;   // 0001 
-	const int RIGHT = 2;  // 0010 
-	const int BOTTOM = 4; // 0100 
-	const int TOP = 8;    // 1000
-	
-	//defining clipping parameters
-	int clip_xmin = 0;
-	int clip_ymin = 0;
-	int clip_xmax = 300;
-	int clip_ymax = 300;
 	
 	//main list that will be built up as initial vertices are processed 
 	//against the clip area and 
 	std::list<Vertex> vertexList = {};
+	
+	Boundary bRight;
+	Boundary bLeft;
+	Boundary bTop;
+	Boundary bBottom;
 
     ///
     // Constructor
@@ -78,11 +76,8 @@ public:
 	//to change to clockwise orientation if counterclockwise originally
 	void orientInitialVertices(int in, const Vertex inV[], Vertex oV[], bool cc);
 	
-	//get the bitmasked code of a given vertex
-	int computeCode(Vertex v);
-	
-	//set the new global clipping parameters
-	void setNewClipParams(Vertex ll, Vertex ur);
+	//sets each clipping boundary
+	void setBoundaries(Vertex ll, Vertex ur);
 
 	//debug function for printing vertex array
 	void printOutV(Vertex arrayV[], int length);

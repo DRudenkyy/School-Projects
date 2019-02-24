@@ -53,8 +53,6 @@ int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
 	
 	bool clockwise = true;
 	
-	setNewClipParams(ll, ur);
-
 	//this list will orient the original vertices to get a clockwise orientation
 	Vertex orientedVertices[in];
 	
@@ -66,53 +64,39 @@ int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
 	orientInitialVertices(in, inV, orientedVertices, clockwise);
 	
 	
+	
     return( in );  // remember to return the outgoing vertex count!
 
 }
 
+void Clipper::setBoundaries(Vertex ll, Vertex ur)
+{
+	Vertex lr = {ll.y, ur.x};
+	Vertex ul = {ll.x, ur.y};
+	
+	bRight.lower = lr;
+	bRight.upper = ur;
+	
+	bLeft.lower = ll;
+	bLeft.upper = ul;
+	
+	bTop.lower = ul;
+	bTop.upper = ur;
+	
+	bBottom.lower = ll;
+	bBottom.upper = lr;
+	
+}
+
 void Clipper::tester(Vertex ll, Vertex ur)
 {	
-	setNewClipParams(ll, ur);
+	/*
 	Vertex vInside = {150, 150};
 	Vertex vAbove = {150, 250};
 	Vertex vBelow = {150, 50};
 	Vertex vRight = {250, 150};
 	Vertex vLeft = {50, 150};
-	
-	cerr << computeCode(vInside) << endl;
-	cerr << computeCode(vAbove) << endl;
-	cerr << computeCode(vBelow) << endl;
-	cerr << computeCode(vRight) << endl;
-	cerr << computeCode(vLeft) << endl;
-
-
-}
-
-//set the new global clipping parameters
-void Clipper::setNewClipParams(Vertex ll, Vertex ur)
-{
-	clip_xmin = ll.x;
-	clip_ymin = ll.y;
-	clip_xmax = ur.x;
-	clip_ymax = ur.y;
-}
-
-// Function to compute region code for a vertex(x, y) 
-int Clipper::computeCode(Vertex v) 
-{ 
-    // initialized as being inside  
-    int code = INSIDE;
-  
-    if (v.x < clip_xmin)       // to the left of rectangle 
-        code |= LEFT; 
-    else if (v.x > clip_xmax)  // to the right of rectangle 
-        code |= RIGHT; 
-    if (v.y < clip_ymin)       // below the rectangle 
-        code |= BOTTOM; 
-    else if (v.y > clip_ymax)  // above the rectangle 
-        code |= TOP; 
-  
-    return code; 
+	*/
 }
 
 // To find orientation of ordered triplet (v1, v2, v3). 
