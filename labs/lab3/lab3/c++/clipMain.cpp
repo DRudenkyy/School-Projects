@@ -217,8 +217,6 @@ void makePolygons( Canvas &C ) {
     // first polygon:  entirely within region
     ///
     
-    clipper.tester(clip0[0], clip0[1]);
-
     C.setColor( 1.0f, 0.0f, 0.0f );    // red
     nv[0] = clipper.clipPolygon( 4, quad1, tmp, clip1[0], clip1[1] );
     if( nv[0] > 0 ) {
@@ -304,10 +302,6 @@ void makePolygons( Canvas &C ) {
     nv[8] = clipper.clipPolygon( quad5_nv, quad5, tmp, clip2[0], clip2[1] );
     if( nv[8] > 0 ) {
         drawPolygon( tmp, nv[8], C );
-        for(int i = 0; i < 4; i ++)
-		{
-			cerr << "x: " << tmp[i].x << " y: " << tmp[i].y << endl;
-		}
     }
 
     ///

@@ -13,7 +13,6 @@
 #define _CLIPPER_H_
 
 #include "Vertex.h"
-#include <list>
 
 ///
 // Simple module that performs clipping
@@ -22,10 +21,6 @@
 class Clipper {
 
 public:
-	
-	//main list that will be built up as initial vertices are processed 
-	//against the clip area and 
-	std::list<Vertex> vertexList = {};
 	
 	//at first I created a Boundaries struct that kept track of lower and
 	//upper vertices that represented it's edge and overloaded == to be 
@@ -85,12 +80,6 @@ public:
 
 	// compute intersection along PS, put into i
 	Vertex intersect(Vertex p, Vertex s, float boundary, int bCase);
-
-	//debug function for printing vertex array
-	void printOutV(Vertex arrayV[], int length);
-
-	void tester(Vertex ll, Vertex ur);
-
 };
 
 #endif
