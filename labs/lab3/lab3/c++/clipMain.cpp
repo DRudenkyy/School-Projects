@@ -304,6 +304,10 @@ void makePolygons( Canvas &C ) {
     nv[8] = clipper.clipPolygon( quad5_nv, quad5, tmp, clip2[0], clip2[1] );
     if( nv[8] > 0 ) {
         drawPolygon( tmp, nv[8], C );
+        for(int i = 0; i < 4; i ++)
+		{
+			cerr << "x: " << tmp[i].x << " y: " << tmp[i].y << endl;
+		}
     }
 
     ///

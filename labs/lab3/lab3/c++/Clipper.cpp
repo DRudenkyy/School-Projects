@@ -12,6 +12,7 @@
 #include "Vertex.h"
 #include "Clipper.h"
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -48,6 +49,7 @@ Clipper::Clipper() {
 int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
                           Vertex ll, Vertex ur )
 {
+	setBoundaries(ll, ur);
 	bool clockwise = true;
 	//this list will orient the original vertices to get a clockwise orientation
 	Vertex orientedVertices[in];
@@ -60,15 +62,52 @@ int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
 	orientInitialVertices(in, inV, orientedVertices, clockwise);
 	
 	//set loop variables
-	//int outLength = 0;   Vertex p = orientedVertices[in - 1]; 
+	int outLength = 0;   Vertex p = orientedVertices[in - 1]; 
 	int bCase = 0;
 	while(bCase < 1)
 	{
-		
-		bCase++;
+		for (int j = 0; j < in; j++) {
+			Vertex s = orientedVertices[j];
+
+			if( inside( s, boundaries[bCase], bCase ) ) {
+				// Cases 1 & 4
+				if ( inside( p, boundaries[bCase], bCase ) ) {
+					// Case 1
+					//add s to outVertices and increment outLength
+					outV[outLength] = s;
+					outLength ++;
+				} else {
+					// Case 4
+					Vertex i = intersect( p, s, boundaries[bCase], bCase );
+					//add i to outVertices
+					outV[outLength] = i;
+					cerr << outLength << " x: " << i.x  << " y: " << i.y << endl;
+					outLength ++;
+					
+					//add s to outVertices
+					outV[outLength] = s;
+					cerr << outLength << " x: " << s.x  << " y: " << s.y << endl;
+					outLength ++;
+					}
+			} else {
+				// Cases 2 & 3
+				if( inside ( p, boundaries[bCase], bCase ) ) {
+					// Case 2
+					Vertex i = intersect( p, s, boundaries[bCase], bCase);
+					//add i to outVertices, increment outLength
+					outV[outLength] = i;
+					outLength ++;
+				}
+				// Case 3 adds nothing
+			}
+			p = s;
+		}
+			bCase++;
 	}
 	
-    return( in );  // remember to return the outgoing vertex count!
+    return(outLength);  // remember to return the outgoing vertex count!
+    
+    return(0);
 
 }
 
@@ -80,7 +119,7 @@ void Clipper::setBoundaries(Vertex ll, Vertex ur)
 	boundaries[3] = ll.x;	//left
 }
 
-// compute intersection along PS, put into i
+// compute intersection along PS, return Vertex i
 Vertex Clipper::intersect(Vertex p, Vertex s, float boundary, int bCase)
 {
 	Vertex i = {0, 0};
@@ -152,23 +191,23 @@ bool Clipper::inside(Vertex v, float boundary, int bCase)
 	switch (bCase) {
 		//top
 		case 0:
-			return v.y < boundary;
-			cerr << " top, value: " << boundary;
+			//cerr << " top, value: " << boundary << " v.y: " << v.y << endl;
+			return v.y <= boundary;
 			break;
 		//right
 		case 1:
-			return v.x < boundary;
-			cerr << " right, value: " << boundary;
+			//cerr << " right, value: " << boundary;
+			return v.x <= boundary;
 			break;
 		//bottom
 		case 2:
-			return v.y > boundary;
-			cerr << " bottom, value: " << boundary;
+			//cerr << " bottom, value: " << boundary;
+			return v.y >= boundary;
 			break;
 		//left
 		case 3:
-			return v.x < boundary;
-			cerr << " left, value: " << boundary;
+			//cerr << " left, value: " << boundary;
+			return v.x >= boundary;
 			break;
 		default:
 			cerr << " Unknown Boundary: " << bCase;
@@ -178,18 +217,26 @@ bool Clipper::inside(Vertex v, float boundary, int bCase)
 
 void Clipper::tester(Vertex ll, Vertex ur)
 {	
+	/*
 	setBoundaries(ll, ur);
+	Vertex vInside = {150, 250};
 	for(int i = 0; i < 4; i++)
 	{
-		inside(ll, boundaries[i], i);
+		cerr << inside(vInside, boundaries[i], i);
 	}
-	/*
+	
 	Vertex vInside = {150, 150};
 	Vertex vAbove = {150, 250};
 	Vertex vBelow = {150, 50};
 	Vertex vRight = {250, 150};
 	Vertex vLeft = {50, 150};
-	*/
+	
+	cerr << inside(vInside, boundaries[0], 0) << endl;
+	cerr << inside(vAbove, boundaries[0], 0) << endl;
+	cerr << inside(vBelow, boundaries[0], 0) << endl;
+	cerr << inside(vRight, boundaries[0], 0) << endl;
+	cerr << inside(vLeft, boundaries[0], 0) << endl;
+*/
 }
 
 // To find orientation of ordered triplet (v1, v2, v3). 
