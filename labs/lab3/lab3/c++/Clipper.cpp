@@ -52,7 +52,7 @@ int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
 	setBoundaries(ll, ur);
 	bool clockwise = true;
 	//this list will orient the original vertices to get a clockwise orientation
-	Vertex orientedVertices[in];
+	Vertex orientedVertices[50];
 	
 	if(orientation(inV[0], inV[1], inV[2]) == 2)
 		clockwise = false;
@@ -62,10 +62,12 @@ int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
 	orientInitialVertices(in, inV, orientedVertices, clockwise);
 	//printOutV(orientedVertices, in);
 	//set loop variables
-	int outLength = 0;   Vertex p = orientedVertices[in - 1]; 
-	int bCase = 1;
-	while(bCase < 2)
+	//int outLength = 0;   Vertex p = orientedVertices[in - 1]; 
+	int outLength = 0;
+	int bCase = 0;
+	while(bCase < 4)
 	{
+		outLength = 0;   Vertex p = orientedVertices[in - 1]; 
 		for (int j = 0; j < in; j++) {
 			Vertex s = orientedVertices[j];
 
@@ -102,14 +104,19 @@ int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
 			}
 			p = s;
 		}
-		printOutV(outV, outLength);
-			/*if(bCase < 3)
+		//printOutV(outV, outLength);
+			if(bCase < 3)
 			{
 				in = outLength;
-				outLength = 0;
-				p = outV[in - 1];
+				//outLength = 0;
+				for(int i = 0; i < in; i++)
+				{
+					orientedVertices[i] = outV[i];
+				}
+				//outV = {};
+				//p = outV[in - 1];
 			}
-			*/
+			
 			bCase ++;
 	}
 	
