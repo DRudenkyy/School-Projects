@@ -19,12 +19,6 @@
 // Simple module that performs clipping
 ///
 
-//struct that represents a single boundary/edge to be clipped at
-typedef struct st_Boundary {
-    Vertex lower;
-    Vertex upper;
-} Boundary;
-
 class Clipper {
 
 public:
@@ -33,10 +27,14 @@ public:
 	//against the clip area and 
 	std::list<Vertex> vertexList = {};
 	
-	Boundary bRight;
-	Boundary bLeft;
-	Boundary bTop;
-	Boundary bBottom;
+	//at first I created a Boundaries struct that kept track of lower and
+	//upper vertices that represented it's edge and overloaded == to be 
+	//able to compare the boundary being passed in to the one I needed
+	//to do arithemtic on. Then I realized that all I needed to keep track
+	//of was its x value (if right or left boundary) or y value (otherwise)
+	//and when to check vertex < boundary (inside for right and top)
+	//and vertex > boundary (inside for left and bottom).
+	int boundaries[4];	//top right bottom left
 
     ///
     // Constructor
@@ -78,6 +76,13 @@ public:
 	
 	//sets each clipping boundary
 	void setBoundaries(Vertex ll, Vertex ur);
+	
+	//returns if the point is inside the boundary
+	//v- vertex we're looking at
+	//boundary- value of the boundary (x or y)
+	//bCase- which boundary are we looking at (top right left of bot)
+	bool inside(Vertex v, int boundary, int bCase);
+
 
 	//debug function for printing vertex array
 	void printOutV(Vertex arrayV[], int length);

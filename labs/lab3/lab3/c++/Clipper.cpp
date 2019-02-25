@@ -71,25 +71,48 @@ int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
 
 void Clipper::setBoundaries(Vertex ll, Vertex ur)
 {
-	Vertex lr = {ll.y, ur.x};
-	Vertex ul = {ll.x, ur.y};
-	
-	bRight.lower = lr;
-	bRight.upper = ur;
-	
-	bLeft.lower = ll;
-	bLeft.upper = ul;
-	
-	bTop.lower = ul;
-	bTop.upper = ur;
-	
-	bBottom.lower = ll;
-	bBottom.upper = lr;
-	
+	boundaries[0] = ur.y;	//top
+	boundaries[1] = ur.x;	//right
+	boundaries[2] = ll.y;	//bottom
+	boundaries[3] = ll.x;	//left
+}
+
+//returns if the point is inside the boundary
+//v- vertex we're looking at
+//boundary- value of the boundary (x or y)
+//bCase- which boundary are we looking at (top right left or bot)
+bool Clipper::inside(Vertex v, int boundary, int bCase)
+{
+	switch (bCase) {
+		//top
+		case 0:
+			cerr << " top, value: " << boundary;
+			break;
+		//right
+		case 1:
+			cerr << " right, value: " << boundary;
+			break;
+		//bottom
+		case 2:
+			cerr << " bottom, value: " << boundary;
+			break;
+		//left
+		case 3:
+			cerr << " left, value: " << boundary;
+			break;
+		default:
+			cerr << " Unknown Boundary: " << bCase;
+	}
+	return false;
 }
 
 void Clipper::tester(Vertex ll, Vertex ur)
 {	
+	setBoundaries(ll, ur);
+	for(int i = 0; i < 4; i++)
+	{
+		inside(ll, boundaries[i], i);
+	}
 	/*
 	Vertex vInside = {150, 150};
 	Vertex vAbove = {150, 250};
