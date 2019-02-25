@@ -60,11 +60,11 @@ int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
 		cerr << "shouldn't happen";
 				
 	orientInitialVertices(in, inV, orientedVertices, clockwise);
-	
+	//printOutV(orientedVertices, in);
 	//set loop variables
 	int outLength = 0;   Vertex p = orientedVertices[in - 1]; 
-	int bCase = 0;
-	while(bCase < 1)
+	int bCase = 1;
+	while(bCase < 2)
 	{
 		for (int j = 0; j < in; j++) {
 			Vertex s = orientedVertices[j];
@@ -81,12 +81,12 @@ int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
 					Vertex i = intersect( p, s, boundaries[bCase], bCase );
 					//add i to outVertices
 					outV[outLength] = i;
-					cerr << outLength << " x: " << i.x  << " y: " << i.y << endl;
+					//cerr << outLength << " x: " << i.x  << " y: " << i.y << endl;
 					outLength ++;
 					
 					//add s to outVertices
 					outV[outLength] = s;
-					cerr << outLength << " x: " << s.x  << " y: " << s.y << endl;
+					//cerr << outLength << " x: " << s.x  << " y: " << s.y << endl;
 					outLength ++;
 					}
 			} else {
@@ -102,13 +102,19 @@ int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
 			}
 			p = s;
 		}
-			bCase++;
+		printOutV(outV, outLength);
+			/*if(bCase < 3)
+			{
+				in = outLength;
+				outLength = 0;
+				p = outV[in - 1];
+			}
+			*/
+			bCase ++;
 	}
 	
     return(outLength);  // remember to return the outgoing vertex count!
     
-    return(0);
-
 }
 
 void Clipper::setBoundaries(Vertex ll, Vertex ur)
