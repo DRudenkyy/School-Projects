@@ -48,11 +48,7 @@ Clipper::Clipper() {
 int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
                           Vertex ll, Vertex ur )
 {
-	//set main list to null
-	vertexList = {};
-	
 	bool clockwise = true;
-	
 	//this list will orient the original vertices to get a clockwise orientation
 	Vertex orientedVertices[in];
 	
@@ -63,7 +59,14 @@ int Clipper::clipPolygon( int in, const Vertex inV[], Vertex outV[],
 				
 	orientInitialVertices(in, inV, orientedVertices, clockwise);
 	
-	
+	//set loop variables
+	//int outLength = 0;   Vertex p = orientedVertices[in - 1]; 
+	int bCase = 0;
+	while(bCase < 1)
+	{
+		
+		bCase++;
+	}
 	
     return( in );  // remember to return the outgoing vertex count!
 
@@ -77,27 +80,94 @@ void Clipper::setBoundaries(Vertex ll, Vertex ur)
 	boundaries[3] = ll.x;	//left
 }
 
+// compute intersection along PS, put into i
+Vertex Clipper::intersect(Vertex p, Vertex s, float boundary, int bCase)
+{
+	Vertex i = {0, 0};
+	switch (bCase) {
+		//top
+		case 0:
+			//vertical line, only need to set y to boundary
+			if(p.x == s.x)
+				i = {p.x, boundary};
+			else {
+				//calculating y is as easy as setting it to boundary
+				i.y = boundary;
+				i.x = p.x + (boundary - p.y) *
+                    (s.x - p.x) / (s.y - p.y);
+			}
+			//cerr << " top, value: " << boundary;
+			break;
+		//right
+		case 1:
+			//horizontal line, only need to set x to boundary
+			if(p.y == s.y)
+				i = {boundary, p.y};
+			else {
+				//calculating x is as easy as setting it to boundary
+				i.x = boundary;
+				i.y = p.y +(boundary - p.x) *
+                    (s.y - p.y) / (s.x - p.x);
+			}
+			//cerr << " right, value: " << boundary;
+			break;
+		//bottom
+		case 2:
+			//vertical line, only need to set y to boundary
+			if(p.x == s.x)
+				i = {p.x, boundary};
+			else {
+				//calculating y is as easy as setting it to boundary
+				i.y = boundary;
+				i.x = p.x + (boundary - p.y) *
+                    (s.x - p.x) / (s.y - p.y);
+			}
+			//cerr << " bottom, value: " << boundary;
+			break;
+		//left
+		case 3:
+			//horizontal line, only need to set x to boundary
+			if(p.y == s.y)
+				i = {boundary, p.y};
+			else {
+				//calculating x is as easy as setting it to boundary
+				i.x = boundary;
+				i.y = p.y +(boundary - p.x) *
+                    (s.y - p.y) / (s.x - p.x);
+			}
+			//cerr << " left, value: " << boundary;
+			break;
+		default:
+			cerr << " Unknown Boundary: " << bCase;
+	}
+	
+	return i;
+}
 //returns if the point is inside the boundary
 //v- vertex we're looking at
 //boundary- value of the boundary (x or y)
 //bCase- which boundary are we looking at (top right left or bot)
-bool Clipper::inside(Vertex v, int boundary, int bCase)
+bool Clipper::inside(Vertex v, float boundary, int bCase)
 {
 	switch (bCase) {
 		//top
 		case 0:
+			return v.y < boundary;
 			cerr << " top, value: " << boundary;
 			break;
 		//right
 		case 1:
+			return v.x < boundary;
 			cerr << " right, value: " << boundary;
 			break;
 		//bottom
 		case 2:
+			return v.y > boundary;
 			cerr << " bottom, value: " << boundary;
 			break;
 		//left
 		case 3:
+			return v.x < boundary;
 			cerr << " left, value: " << boundary;
 			break;
 		default:

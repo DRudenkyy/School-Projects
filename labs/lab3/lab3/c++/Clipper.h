@@ -34,7 +34,7 @@ public:
 	//of was its x value (if right or left boundary) or y value (otherwise)
 	//and when to check vertex < boundary (inside for right and top)
 	//and vertex > boundary (inside for left and bottom).
-	int boundaries[4];	//top right bottom left
+	float boundaries[4];	//top right bottom left
 
     ///
     // Constructor
@@ -81,8 +81,10 @@ public:
 	//v- vertex we're looking at
 	//boundary- value of the boundary (x or y)
 	//bCase- which boundary are we looking at (top right left of bot)
-	bool inside(Vertex v, int boundary, int bCase);
+	bool inside(Vertex v, float boundary, int bCase);
 
+	// compute intersection along PS, put into i
+	Vertex intersect(Vertex p, Vertex s, float boundary, int bCase);
 
 	//debug function for printing vertex array
 	void printOutV(Vertex arrayV[], int length);
