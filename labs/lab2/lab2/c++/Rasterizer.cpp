@@ -44,8 +44,9 @@ void Rasterizer::test()
 	//drawPolygon(8, x, y);
 	initializeEdgeTable();
 	allocateEdgeTable(6, x, y);
-	sortEdgeTable();
+	//sortEdgeTable();
 	//printEdgeTable();
+	//cerr << endl;
 	processScanLines();
 	//printEdgeTable();
 }
@@ -69,12 +70,12 @@ void Rasterizer::test()
 ///
 void Rasterizer::drawPolygon(int n, const int x[], const int y[] )
 {
-	
+	/*
 	initializeEdgeTable();
 	allocateEdgeTable(n, x, y);
 	sortEdgeTable();
 	printEdgeTable();
-	processScanLines();
+	processScanLines();*/
 	
 }
 
@@ -85,26 +86,28 @@ void Rasterizer::processScanLines()
 	while(edgeTable[firstEdgeYval] == nullptr)
 		firstEdgeYval++;
 		
-	
-	for(int y = firstEdgeYval; y < n_scanlines; y++)
+	//go through all y pixels on the screen and process them
+	//for(int y = firstEdgeYval; y < n_scanlines; y++)
+	for(int y = firstEdgeYval; y < 12; y++)
 	{
+		//cerr << "ActiveList at " << y << ": "; printAL();
 		if(edgeTable[y] != nullptr)
 		{
-			if(activeEdgeList != nullptr)
-			{
-				discardYMaxEdges(y);
-				//the last yMax was discarded and we can stop
-				if(activeEdgeList == nullptr)
-					return;
-			}
-			
-			printEdgeTable();
-			
 			transferETBucketToAL(y);
-			sortEdgeBuckets(activeEdgeList);
-			
-			applySlope();
+			printEdgeTable();
 		}
+		
+		if(activeEdgeList != nullptr)
+		{
+			cerr << "ActiveList ins't empty" << endl;
+			discardYMaxEdges(y);
+			//the last yMax was discarded and we can stop
+			if(activeEdgeList == nullptr)
+				return;
+		}
+		sortEdgeBuckets(activeEdgeList);
+		//draw here?
+		applySlope();
 	}
 }
 
@@ -112,9 +115,10 @@ void Rasterizer::processScanLines()
 void Rasterizer::applySlope()
 {
 	EdgeBucket* curr;
-	for(curr = activeEdgeList; curr->nextEdge != nullptr; curr = curr->nextEdge) 
+	for(curr = activeEdgeList; curr != nullptr;) 
 	{
 		curr->x += curr->inverseSlope;
+		curr = curr->nextEdge;
 	}
 }
 
@@ -123,12 +127,12 @@ void Rasterizer::drawScanLine(int y)
 {
 	float x1 = -1.0, x2 = -1.0;
 	EdgeBucket* curr;
-	for(curr = activeEdgeList; curr->nextEdge != nullptr; curr = curr->nextEdge) 
+	for(curr = activeEdgeList; curr != nullptr;) 
 	{
 		if(x1 == -1.0)
-			x1 = curr->x;	//set the inside x
+			x1 = activeEdgeList->x;	//set the inside x
 		else if(x2 == -1.0)
-			x2 = curr->x;	//set the outside x
+			x2 = activeEdgeList->x;	//set the outside x
 			
 		if(x1 != -1.0 && x2 != -1.0)
 		{
@@ -138,6 +142,7 @@ void Rasterizer::drawScanLine(int y)
 			//reset these for the next two pairs	
 			x1 = -1.0, x2 = -1.0;
 		}
+		curr = curr->nextEdge;
 	}
 }
 
@@ -160,25 +165,28 @@ void Rasterizer::transferETBucketToAL(int currentY)
 
 void Rasterizer::discardYMaxEdges(int currentY)
 {
-	//I believe I will only be deleting the heads of active list
-	//and therefore won't have to include a previous node location
-	//EdgeBucket* prev = activeEdgeList;
+	cerr << "before" << endl;
+	printAL();
+	//the ActiveList has only one bucket
 	EdgeBucket* curr;
-	for(curr = activeEdgeList; curr->nextEdge != nullptr; curr = curr->nextEdge) 
+	for(curr = activeEdgeList; curr != nullptr;) 
 	{
 		if(curr->yMax == currentY)
 		{
-			if(curr->nextEdge != nullptr)
-			{
-				cerr << currentY << " discarding " << activeEdgeList->yMax << " | "  
-				<< activeEdgeList->x << " | "
-				<< activeEdgeList->inverseSlope << " |";
-				activeEdgeList = activeEdgeList->nextEdge;
-			}
-				
-			delete(curr);
+			cerr << currentY << " discarding " << activeEdgeList->yMax << " | "  
+			<< activeEdgeList->x << " | "
+			<< activeEdgeList->inverseSlope << " |";
+			curr = curr->nextEdge;
+			//delete activeEdgeList;
+			activeEdgeList = curr;
+		}
+		else {
+			cerr << "next" << endl;
+			curr = curr->nextEdge;
 		}
 	}
+	cerr << "after" << endl;
+	printAL();
 }
 
 //initialize edge table
@@ -210,7 +218,7 @@ EdgeBucket* Rasterizer::sortEdgeBuckets(EdgeBucket* head)
 		return head;
 		
     EdgeBucket * curr;
-    for(bool didSwap = true; didSwap; ) 
+    for(bool didSwap = true; didSwap;) 
     {
         didSwap = false;
         for(curr = head; curr->nextEdge != nullptr; curr = curr->nextEdge) 
@@ -302,7 +310,8 @@ void Rasterizer::allocateEdgeTable(int n, const int x[], const int y[])
 //debugging function
 void Rasterizer::printEdgeTable()
 {
-	for(int i = 0; i < 12; i++)
+	cerr << "EdgeTable" << endl; 
+	for(int i = 11; i >= 0; i--)
 	{
 		cerr << i << ": |";
 		EdgeBucket* bucketList = edgeTable[i];
@@ -321,5 +330,31 @@ void Rasterizer::printEdgeTable()
 			
 		cerr << endl;
 	}
+}
+
+//debugging function
+void Rasterizer::printAL()
+{
+		//cerr << "ActiveList" << endl;
+		if(activeEdgeList != nullptr)
+		{
+			if(activeEdgeList->nextEdge != nullptr)
+			{
+				do
+				{
+					cerr << activeEdgeList->yMax << " | "  
+					<< activeEdgeList->x << " | "
+					<< activeEdgeList->inverseSlope << " | --> || ";
+					activeEdgeList = activeEdgeList->nextEdge;
+				}while(activeEdgeList != nullptr);
+			}else
+			{
+				cerr << activeEdgeList->yMax << " | "  
+					<< activeEdgeList->x << " | "
+					<< activeEdgeList->inverseSlope << " | --> || ";
+					activeEdgeList = activeEdgeList->nextEdge;
+			}
+		}
+		cerr << endl;
 }
 

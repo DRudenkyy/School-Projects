@@ -101,6 +101,7 @@ public:
     void applySlope();
     
     void printEdgeTable();
+    void printAL();
     void test();
     
 };
