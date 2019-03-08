@@ -169,8 +169,8 @@ void Rasterizer::transferETBucketToAL(int currentY)
 
 void Rasterizer::discardYMaxEdges(int currentY)
 {
-	cerr << "before" << endl;
-	printAL();
+	//cerr << "before" << endl;
+	//printAL();
 	EdgeBucket* curr;
 	EdgeBucket* prev;
 	for(curr = activeEdgeList; curr != nullptr;) 
@@ -192,8 +192,8 @@ void Rasterizer::discardYMaxEdges(int currentY)
 			curr = curr->nextEdge;
 		}
 	}
-	cerr << "after" << endl;
-	printAL();
+	//cerr << "after" << endl;
+	//printAL();
 }
 
 //initialize edge table
@@ -247,8 +247,8 @@ EdgeBucket* Rasterizer::swapBucketValues(EdgeBucket* bucket)
 {
 	EdgeBucket* nextBucket = bucket->nextEdge;
 	int yMax = nextBucket->yMax;
-	int initialX = nextBucket->x;
-	int invM = nextBucket->inverseSlope;
+	float initialX = nextBucket->x;
+	float invM = nextBucket->inverseSlope;
 	
 	nextBucket->yMax = bucket->yMax;
 	nextBucket->x = bucket->x;
