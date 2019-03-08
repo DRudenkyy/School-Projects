@@ -90,20 +90,24 @@ void Rasterizer::processScanLines()
 	//for(int y = firstEdgeYval; y < n_scanlines; y++)
 	for(int y = firstEdgeYval; y < 12; y++)
 	{
-		//cerr << "ActiveList at " << y << ": "; printAL();
+		cerr << "ActiveList at " << y << ": "; printAL();
+		
+		//drop from activeList if necessary
+		if(activeEdgeList != nullptr)
+		{
+			discardYMaxEdges(y);
+			//the last yMax was discarded and we can stop
+			if(activeEdgeList == nullptr)
+			{
+				cerr << "Ending";
+				return;
+			}
+		}
+		//move edgeBucket into AL
 		if(edgeTable[y] != nullptr)
 		{
 			transferETBucketToAL(y);
 			printEdgeTable();
-		}
-		
-		if(activeEdgeList != nullptr)
-		{
-			cerr << "ActiveList ins't empty" << endl;
-			discardYMaxEdges(y);
-			//the last yMax was discarded and we can stop
-			if(activeEdgeList == nullptr)
-				return;
 		}
 		sortEdgeBuckets(activeEdgeList);
 		//draw here?
@@ -167,21 +171,24 @@ void Rasterizer::discardYMaxEdges(int currentY)
 {
 	cerr << "before" << endl;
 	printAL();
-	//the ActiveList has only one bucket
 	EdgeBucket* curr;
+	EdgeBucket* prev;
 	for(curr = activeEdgeList; curr != nullptr;) 
-	{
+	{		
 		if(curr->yMax == currentY)
 		{
-			cerr << currentY << " discarding " << activeEdgeList->yMax << " | "  
-			<< activeEdgeList->x << " | "
-			<< activeEdgeList->inverseSlope << " |";
-			curr = curr->nextEdge;
-			//delete activeEdgeList;
-			activeEdgeList = curr;
+			cerr << currentY << " discarding " << curr->yMax << " | "  
+			<< curr->x << " | "
+			<< curr->inverseSlope << " |";
+			if(curr == activeEdgeList)	//deleting head
+				activeEdgeList = curr->nextEdge;
+			else
+				prev->nextEdge = curr->nextEdge;
+				
+			delete curr;	//deallocate memory
 		}
 		else {
-			cerr << "next" << endl;
+			prev = curr;
 			curr = curr->nextEdge;
 		}
 	}
@@ -336,23 +343,24 @@ void Rasterizer::printEdgeTable()
 void Rasterizer::printAL()
 {
 		//cerr << "ActiveList" << endl;
-		if(activeEdgeList != nullptr)
+		EdgeBucket* curr =  activeEdgeList;
+		if(curr != nullptr)
 		{
-			if(activeEdgeList->nextEdge != nullptr)
+			if(curr->nextEdge != nullptr)
 			{
 				do
 				{
-					cerr << activeEdgeList->yMax << " | "  
-					<< activeEdgeList->x << " | "
-					<< activeEdgeList->inverseSlope << " | --> || ";
-					activeEdgeList = activeEdgeList->nextEdge;
-				}while(activeEdgeList != nullptr);
+					cerr << curr->yMax << " | "  
+					<< curr->x << " | "
+					<< curr->inverseSlope << " | --> || ";
+					curr = curr->nextEdge;
+				}while(curr != nullptr);
 			}else
 			{
-				cerr << activeEdgeList->yMax << " | "  
-					<< activeEdgeList->x << " | "
-					<< activeEdgeList->inverseSlope << " | --> || ";
-					activeEdgeList = activeEdgeList->nextEdge;
+				cerr << curr->yMax << " | "  
+					<< curr->x << " | "
+					<< curr->inverseSlope << " | --> || ";
+					curr = curr->nextEdge;
 			}
 		}
 		cerr << endl;
