@@ -6,7 +6,7 @@
 //  Based on a version created by Joe Geigel on 11/30/11.
 //  Copyright 2011 Rochester Institute of Technology. All rights reserved.
 //
-//  Contributor:  YOUR_NAME_HERE
+//  Contributor:  Dmytro Rudenkyy
 //
 
 #ifndef _CLIPPER_H_
@@ -21,6 +21,15 @@
 class Clipper {
 
 public:
+	
+	//at first I created a Boundaries struct that kept track of lower and
+	//upper vertices that represented it's edge and overloaded == to be 
+	//able to compare the boundary being passed in to the one I needed
+	//to do arithemtic on. Then I realized that all I needed to keep track
+	//of was its x value (if right or left boundary) or y value (otherwise)
+	//and when to check vertex < boundary (inside for right and top)
+	//and vertex > boundary (inside for left and bottom).
+	float boundaries[4];	//top right bottom left
 
     ///
     // Constructor
@@ -48,7 +57,29 @@ public:
     ///
     int clipPolygon( int in, const Vertex inV[], Vertex outV[],
 		     Vertex ll, Vertex ur );
+		     
+	// To find orientation of ordered triplet (v1, v2, v3). 
+	// The function returns following values 
+	// 0 --> p, q and r are colinear 
+	// 1 --> Clockwise 
+	// 2 --> Counterclockwise 
+	int orientation(Vertex v1, Vertex v2, Vertex v3);
 
+	//initializes vertices before clipping by orienting input vertices
+	//to change to clockwise orientation if counterclockwise originally
+	void orientInitialVertices(int in, const Vertex inV[], Vertex oV[], bool cc);
+	
+	//sets each clipping boundary
+	void setBoundaries(Vertex ll, Vertex ur);
+	
+	//returns if the point is inside the boundary
+	//v- vertex we're looking at
+	//boundary- value of the boundary (x or y)
+	//bCase- which boundary are we looking at (top right left of bot)
+	bool inside(Vertex v, float boundary, int bCase);
+
+	// compute intersection along PS, put into i
+	Vertex intersect(Vertex p, Vertex s, float boundary, int bCase);
 };
 
 #endif
