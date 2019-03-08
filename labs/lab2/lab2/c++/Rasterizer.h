@@ -83,9 +83,7 @@ public:
     void initializeEdgeTable();
     
     void allocateEdgeTable(int n, const int x[], const int y[]);
-    
-    void sortEdgeTable();
-    
+        
     EdgeBucket* sortEdgeBuckets(EdgeBucket* head);
     
     EdgeBucket* swapBucketValues(EdgeBucket* bucket);
@@ -102,8 +100,6 @@ public:
     
     void printEdgeTable();
     void printAL();
-    void test();
-    
 };
 
 
