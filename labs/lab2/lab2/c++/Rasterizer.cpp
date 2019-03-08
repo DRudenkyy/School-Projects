@@ -70,12 +70,10 @@ void Rasterizer::test()
 ///
 void Rasterizer::drawPolygon(int n, const int x[], const int y[] )
 {
-	/*
+	
 	initializeEdgeTable();
 	allocateEdgeTable(n, x, y);
-	sortEdgeTable();
-	printEdgeTable();
-	processScanLines();*/
+	processScanLines();
 	
 }
 
@@ -87,8 +85,7 @@ void Rasterizer::processScanLines()
 		firstEdgeYval++;
 		
 	//go through all y pixels on the screen and process them
-	//for(int y = firstEdgeYval; y < n_scanlines; y++)
-	for(int y = firstEdgeYval; y < 12; y++)
+	for(int y = firstEdgeYval; y < n_scanlines; y++)
 	{
 		cerr << "ActiveList at " << y << ": "; printAL();
 		
@@ -110,7 +107,7 @@ void Rasterizer::processScanLines()
 			printEdgeTable();
 		}
 		sortEdgeBuckets(activeEdgeList);
-		//draw here?
+		drawScanLine(y);
 		applySlope();
 	}
 }
@@ -130,23 +127,41 @@ void Rasterizer::applySlope()
 void Rasterizer::drawScanLine(int y)
 {
 	float x1 = -1.0, x2 = -1.0;
+	int pixMin = -1, pixMax = -1;
 	EdgeBucket* curr;
 	for(curr = activeEdgeList; curr != nullptr;) 
 	{
 		if(x1 == -1.0)
-			x1 = activeEdgeList->x;	//set the inside x
-		else if(x2 == -1.0)
-			x2 = activeEdgeList->x;	//set the outside x
+		{
+			x1 = curr->x;	//set the inside x
+			cerr << "setting x1 " << x1 << endl;
+			//curr = curr->nextEdge;	//go to partner edge
+		}
+		else
+		{
+			x2 = curr->x;	//set the outside x
+			cerr << "setting x2 " << x2 << endl;
+		}
 			
 		if(x1 != -1.0 && x2 != -1.0)
 		{
-			for(int i = (int)ceil(x1); i < (int)ceil(x2); i ++)
+			pixMin = (int)ceil(x1);
+			pixMax = (int)ceil(x2);
+			if(pixMin == pixMax)
+			{
+				cerr << "This is an edge, do not draw" << endl;
+			}
+			else
+			{
+			cerr << "Draw " << pixMin << " to " << pixMax << endl;
+			for(int i = pixMin; i < pixMax; i ++)
 				C.setPixel(i, y);
-				
+			}
 			//reset these for the next two pairs	
 			x1 = -1.0, x2 = -1.0;
 		}
 		curr = curr->nextEdge;
+		cerr << "next" << endl;
 	}
 }
 
