@@ -6,7 +6,7 @@
 //  Updated 2018/10/12 by wrc.
 //  Copyright 2018 Rochester Institute of Technology. All rights reserved.
 //
-//  Contributor:  YOUR_NAME_HERE
+//  Contributor:  Dmytro Rudenkyy
 //
 
 #ifndef _PIPELINE_H_
@@ -14,6 +14,8 @@
 
 #include "Canvas.h"
 #include "Vertex.h"
+#include "Rasterizer.h"
+#include "Clipper.h"
 
 using namespace std;
 
@@ -28,6 +30,11 @@ using namespace std;
 // are to be modified by students.
 ///
 
+struct Polygon {
+	int n; //number of vertices
+	Vertex p[50];	//Array containing the vertices of the polygon to be added.
+};
+
 class Pipeline : public Canvas {
 
 public:
@@ -39,6 +46,10 @@ public:
     // @param h height of canvas
     ///
     Pipeline(int w, int h);
+    
+    Polygon* polyArray[25];
+    
+    int polyIdIndexer = 0;
 
     ///
     // addPoly - Add a polygon to the canvas.  This method does not draw
@@ -117,6 +128,21 @@ public:
     // @param height - width of view window (in world coords)
     ///
     void setViewport( int x, int y, int width, int height );
+
+
+	//Clipping Related Functions--------------------------------------------
+	// To find orientation of ordered triplet (v1, v2, v3). 
+	// The function returns following values 
+	// 0 --> p, q and r are colinear 
+	// 1 --> Clockwise 
+	// 2 --> Counterclockwise 
+	int orientation(Vertex v1, Vertex v2, Vertex v3);
+	
+	//initializes vertices before clipping by orienting input vertices
+	//to change to clockwise orientation if counterclockwise originally
+	void orientInitialVertices(int in, const Vertex inV[], 
+												Vertex oV[], bool cc);
+	//PolyDrawing Related Functions-----------------------------------------
 
 };
 

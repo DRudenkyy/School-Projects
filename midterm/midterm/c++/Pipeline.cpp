@@ -6,7 +6,7 @@
 //  Updated 2018/10/12 by wrc.
 //  Copyright 2018 Rochester Institute of Technology. All rights reserved.
 //
-//  Contributor:  YOUR_NAME_HERE
+//  Contributor:  Dmytro Rudenkyy
 //
 
 #include <iostream>
@@ -50,10 +50,24 @@ Pipeline::Pipeline( int w, int h ) : Canvas(w,h)
 ///
 int Pipeline::addPoly( const Vertex p[], int n )
 {
-    // YOUR IMPLEMENTATION HERE
+    Polygon* newPol = new Polygon();
+    
+    bool clockwise = true;
+	
+	if(orientation(p[0], p[1], p[2]) == 2)
+		clockwise = false;
+	else if(orientation(p[0], p[1], p[2]) == 0)
+		cerr << "shouldn't happen";
+	
+	//this will orient the original vertices to get a clockwise orientation
+	//necessary to do clipping properly but not for drawing
+	orientInitialVertices(n, p, newPol->p, clockwise);
+	
+	newPol->n = n;
+	polyArray[polyIdIndexer] = newPol;
+	polyIdIndexer++;
 
-    // REMEMBER TO RETURN A UNIQUE ID FOR THE POLYGON
-    return 0;
+    return polyIdIndexer - 1;
 }
 
 ///
@@ -65,7 +79,10 @@ int Pipeline::addPoly( const Vertex p[], int n )
 ///
 void Pipeline::drawPoly( int polyID )
 {
-    // YOUR IMPLEMENTATION HERE
+	cerr << endl;
+	for(int i = 0; i < polyArray[polyID]->n; i++)
+		cerr << polyArray[polyID]->p[i].x << " "
+		 << polyArray[polyID]->p[i].y << endl;
 }
 
 ///
@@ -139,3 +156,42 @@ void Pipeline::setViewport( int x, int y, int width, int height )
 {
     // YOUR IMPLEMENTATION HERE
 }
+
+
+//Clipping Related Functions--------------------------------------------
+// To find orientation of ordered triplet (v1, v2, v3). 
+// The function returns following values 
+// 0 --> p, q and r are colinear 
+// 1 --> Clockwise 
+// 2 --> Counterclockwise 
+int Pipeline::orientation(Vertex v1, Vertex v2, Vertex v3) 
+{ 
+    int val = (v2.y - v1.y) * (v3.x - v2.x) - 
+              (v2.x - v1.x) * (v3.y - v2.y); 
+  
+    if (val == 0) return 0;  // colinear 
+  
+    return (val > 0)? 1: 2; // clock or counterclock wise 
+}
+
+//initializes vertices before clipping by orienting input vertices
+//to change to clockwise orientation if counterclockwise originally
+void Pipeline::orientInitialVertices(int in, const Vertex inV[], 
+											Vertex oV[], bool cc)
+{
+	//first vertex stays the same regardless of orientation
+	oV[0] = inV[0];
+
+	if(cc)
+	{
+		for(int i = 1; i < in; i++)
+			oV[i] = inV[i];
+	}
+	else
+	{
+		for(int i = in - 1; i > 0; i--)
+			oV[i] = inV[in - i];
+	}
+}
+
+//PolyDrawing Related Functions-----------------------------------------
