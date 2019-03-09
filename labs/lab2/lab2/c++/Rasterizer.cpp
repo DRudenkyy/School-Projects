@@ -158,11 +158,17 @@ void Rasterizer::discardYMaxEdges(int currentY)
 		if(curr->yMax == currentY)
 		{
 			if(curr == activeEdgeList)	//deleting head
-				activeEdgeList = curr->nextEdge;
-			else
-				prev->nextEdge = curr->nextEdge;
-				
-			delete curr;	//deallocate memory
+			{
+				activeEdgeList = curr->nextEdge;	//move the head over
+				delete curr;	//deallocate memory
+				curr = activeEdgeList;	//set the next curr
+			}
+			else   //deleting middle or tail
+			{
+				prev->nextEdge = curr->nextEdge;	//set the prev
+				delete curr;	//deallocate memory
+				curr = prev->nextEdge;	//set the next curr
+			}			
 		}
 		else {
 			prev = curr;
