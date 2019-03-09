@@ -56,6 +56,7 @@ void Rasterizer::drawPolygon(int n, const int x[], const int y[] )
 	
 	initializeEdgeTable();
 	allocateEdgeTable(n, x, y);
+	printEdgeTable();
 	processScanLines();
 }
 
@@ -71,6 +72,7 @@ void Rasterizer::processScanLines()
 	//go through all y pixels on the screen and process them
 	for(int y = firstEdgeYval; y < n_scanlines; y++)
 	{		
+		cerr << y << endl;
 		//drop from activeList if necessary
 		if(activeEdgeList != nullptr)
 			discardYMaxEdges(y);
@@ -158,11 +160,18 @@ void Rasterizer::discardYMaxEdges(int currentY)
 		if(curr->yMax == currentY)
 		{
 			if(curr == activeEdgeList)	//deleting head
+			{
 				activeEdgeList = curr->nextEdge;
-			else
+				delete curr;	//deallocate memory
+				curr = activeEdgeList;
+			}
+			else   //deleting middle or tail
+			{
 				prev->nextEdge = curr->nextEdge;
-				
-			delete curr;	//deallocate memory
+				delete curr;	//deallocate memory
+				curr = prev->nextEdge;
+			}
+								
 		}
 		else {
 			prev = curr;
@@ -280,7 +289,7 @@ void Rasterizer::allocateEdgeTable(int n, const int x[], const int y[])
 void Rasterizer::printEdgeTable()
 {
 	cerr << "EdgeTable" << endl; 
-	for(int i = 220; i >= 110; i--)
+	for(int i = 90; i >= 10; i--)
 	{
 		cerr << i << ": |";
 		EdgeBucket* bucketList = edgeTable[i];

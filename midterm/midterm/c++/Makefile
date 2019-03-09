@@ -1,5 +1,5 @@
 #
-# Created by gmakemake (Ubuntu Jul 25 2014) on Fri Mar  8 06:29:30 2019
+# Created by gmakemake (Ubuntu Jul 25 2014) on Fri Mar  8 21:30:21 2019
 #
 
 #
@@ -83,14 +83,14 @@ CCLIBFLAGS = $(LIBFLAGS) $(CCLDLIBS)
 ########## End of flags from header.mak
 
 
-CPP_FILES =	Buffers.cpp Canvas.cpp Clipper.cpp Pipeline.cpp Rasterizer.cpp ShaderSetup.cpp midtermMain.cpp
+CPP_FILES =	Buffers.cpp Canvas.cpp Pipeline.cpp ShaderSetup.cpp midtermMain.cpp
 C_FILES =	
 PS_FILES =	
 S_FILES =	
-H_FILES =	Buffers.h Canvas.h Clipper.h Pipeline.h Rasterizer.h ShaderSetup.h Vertex.h
+H_FILES =	Buffers.h Canvas.h Pipeline.h ShaderSetup.h Vertex.h
 SOURCEFILES =	$(H_FILES) $(CPP_FILES) $(C_FILES) $(S_FILES)
 .PRECIOUS:	$(SOURCEFILES)
-OBJFILES =	Buffers.o Canvas.o Clipper.o Pipeline.o Rasterizer.o ShaderSetup.o 
+OBJFILES =	Buffers.o Canvas.o Pipeline.o ShaderSetup.o 
 
 #
 # Main targets
@@ -105,13 +105,11 @@ midtermMain:	midtermMain.o $(OBJFILES)
 # Dependencies
 #
 
-Buffers.o:	Buffers.h Canvas.h Clipper.h Pipeline.h Rasterizer.h Vertex.h
+Buffers.o:	Buffers.h Canvas.h Pipeline.h Vertex.h
 Canvas.o:	Canvas.h
-Clipper.o:	Clipper.h Vertex.h
-Pipeline.o:	Canvas.h Clipper.h Pipeline.h Rasterizer.h Vertex.h
-Rasterizer.o:	Canvas.h Rasterizer.h
+Pipeline.o:	Canvas.h Pipeline.h Vertex.h
 ShaderSetup.o:	ShaderSetup.h
-midtermMain.o:	Buffers.h Canvas.h Clipper.h Pipeline.h Rasterizer.h ShaderSetup.h Vertex.h
+midtermMain.o:	Buffers.h Canvas.h Pipeline.h ShaderSetup.h Vertex.h
 
 #
 # Housekeeping

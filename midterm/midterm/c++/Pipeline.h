@@ -14,8 +14,6 @@
 
 #include "Canvas.h"
 #include "Vertex.h"
-#include "Rasterizer.h"
-#include "Clipper.h"
 
 using namespace std;
 
@@ -35,10 +33,34 @@ struct Polygon {
 	Vertex p[50];	//Array containing the vertices of the polygon to be added.
 };
 
+struct EdgeBucket {
+    int   yMax;         // Final Y
+    float x;            // Initial X
+    float inverseSlope; // Slope of edge WRT Y
+    EdgeBucket* nextEdge;     // Reference to next Edge at scanline
+};
+
 class Pipeline : public Canvas {
 
 public:
+    Polygon* polyArray[25];
+    int polyIdIndexer = 0;
+    
+    //clipping boundaries. x value (if right or left boundary) or y value (otherwise)
+	//and when to check vertex < boundary (inside for right and top)
+	//and vertex > boundary (inside for left and bottom).
+	float boundaries[4];	//top right bottom left
+    
+    //We are guaranteed a 500-pixel vertical resolution
+	//I am using this as a crutch since I spent way too much time 
+	//trying to figure out how to dynamically allocate array sizes in C (using malloc)
+    static const int MAX_SCANLINES = 500;
 
+    // Each scanline has a pointer to its first Edge
+    EdgeBucket* edgeTable[MAX_SCANLINES];
+
+    EdgeBucket* activeEdgeList = nullptr;    // No edges until we hit
+											// first scanline with edges.
     ///
     // Constructor
     //
@@ -47,9 +69,7 @@ public:
     ///
     Pipeline(int w, int h);
     
-    Polygon* polyArray[25];
-    
-    int polyIdIndexer = 0;
+
 
     ///
     // addPoly - Add a polygon to the canvas.  This method does not draw
@@ -142,8 +162,39 @@ public:
 	//to change to clockwise orientation if counterclockwise originally
 	void orientInitialVertices(int in, const Vertex inV[], 
 												Vertex oV[], bool cc);
-	//PolyDrawing Related Functions-----------------------------------------
+												
+    //returns if the point is inside the boundary
+	//v- vertex we're looking at
+	//boundary- value of the boundary (x or y)
+	//bCase- which boundary are we looking at (top right left of bot)
+	bool inside(Vertex v, float boundary, int bCase);
 
+	// compute intersection along PS, put into i
+	Vertex intersect(Vertex p, Vertex s, float boundary, int bCase);
+	
+	//PolyDrawing Related Functions-----------------------------------------
+	void drawPolygon(int n, Vertex v[]);
+
+    void initializeEdgeTable();
+    
+    void allocateEdgeTable(int n, Vertex v[]);
+        
+    EdgeBucket* sortEdgeBuckets(EdgeBucket* head);
+    
+    EdgeBucket* swapBucketValues(EdgeBucket* bucket);
+    
+    void processScanLines();
+    
+    void drawScanLine(int y);
+    
+    void discardYMaxEdges(int currentY);
+    
+    void transferETBucketToAL(int currentY);
+    
+    void applySlope();
+    
+    void printEdgeTable();
+    void printAL();
 };
 
 #endif

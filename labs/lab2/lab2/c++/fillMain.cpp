@@ -60,6 +60,19 @@ void makePolygons( Rasterizer &R )
     // make these large enough for any of our polygons
     int x[10];
     int y[10];
+    
+    x[0] = 150;  y[0] = 90;
+    x[1] = 140;  y[1] = 65;
+    x[2] = 110;  y[2] = 65;
+    x[3] = 140;  y[3] = 40;
+    x[4] = 110;  y[4] = 10;
+    x[5] = 150;  y[5] = 25;
+    x[6] = 190;  y[6] = 10;
+    x[7] = 160;  y[7] = 40;
+    x[8] = 190;  y[8] = 65;
+    x[9] = 160;  y[9] = 65;
+    R.C.setColor( 0.5f, 0.0f, 0.0f );
+    R.drawPolygon( 10, x, y );
 
     // ########### TEAPOT START ###########
     // BASE
