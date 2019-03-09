@@ -80,10 +80,20 @@ int Pipeline::addPoly( const Vertex p[], int n )
 void Pipeline::drawPoly( int polyID )
 {
 	Polygon* thisPoly = polyArray[polyID];
-	initializeEdgeTable();
-	allocateEdgeTable(thisPoly->n, thisPoly->p);
-	printEdgeTable();
+	if(boundaries[2] == 0)	//default boundaries
+	{
+		initializeEdgeTable();
+		allocateEdgeTable(thisPoly->n, thisPoly->p);
+	}
+	else
+	{
+		Vertex outV[50];
+		int n = clipPolygon(thisPoly, outV);
+		initializeEdgeTable();
+		allocateEdgeTable(n, outV);
+	}
 	processScanLines();
+
 }
 
 ///
@@ -163,6 +173,70 @@ void Pipeline::setViewport( int x, int y, int width, int height )
 
 
 //Clipping Related Functions--------------------------------------------
+
+int Pipeline::clipPolygon(Polygon* poly, Vertex outV[])
+{
+	//create a temporary copy of polygon vertices to preserve original data
+	Vertex temp[50];
+	int in = poly->n;
+	for(int i = 0; i < in; i++)
+		temp[i] = poly->p[i];
+	
+	int outLength = 0;
+	int bCase = 0;	//stands for which boundary we are clipping against
+	while(bCase < 4)
+	{
+		outLength = 0;   Vertex p = temp[in - 1]; 
+		for (int j = 0; j < in; j++) {
+			Vertex s = temp[j];
+
+			if( inside( s, boundaries[bCase], bCase ) ) {
+				// Cases 1 & 4
+				if ( inside( p, boundaries[bCase], bCase ) ) {
+					// Case 1
+					//add s to outVertices and increment outLength
+					outV[outLength] = s;
+					outLength ++;
+				} else {
+					// Case 4
+					Vertex i = intersect( p, s, boundaries[bCase], bCase );
+					//add i to outVertices and increment outLength
+					outV[outLength] = i;
+					outLength ++;
+					
+					//add s to outVertices and increment outLength
+					outV[outLength] = s;
+					outLength ++;
+					}
+			} else {
+				// Cases 2 & 3
+				if( inside ( p, boundaries[bCase], bCase ) ) {
+					// Case 2
+					Vertex i = intersect( p, s, boundaries[bCase], bCase);
+					//add i to outVertices, increment outLength
+					outV[outLength] = i;
+					outLength ++;
+				}
+				// Case 3 adds nothing
+			}
+			p = s;
+		}
+			//we have more boundaries to clip on so set next input array
+			if(bCase < 3)
+			{
+				//update our in value and set input equal to the vertices 
+				//we just generated to be used for the next clipping boundary
+				in = outLength;
+				for(int i = 0; i < in; i++)
+					temp[i] = outV[i];
+			}
+			
+			bCase ++;
+	}
+	
+    return(outLength);  // remember to return the outgoing vertex count!
+}
+
 // To find orientation of ordered triplet (v1, v2, v3). 
 // The function returns following values 
 // 0 --> p, q and r are colinear 

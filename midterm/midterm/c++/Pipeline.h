@@ -151,6 +151,8 @@ public:
 
 
 	//Clipping Related Functions--------------------------------------------
+	int clipPolygon(Polygon* poly, Vertex outV[]);
+	
 	// To find orientation of ordered triplet (v1, v2, v3). 
 	// The function returns following values 
 	// 0 --> p, q and r are colinear 
