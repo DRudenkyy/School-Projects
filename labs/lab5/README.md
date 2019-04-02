@@ -211,9 +211,9 @@ Regardless of where you construct your matrices, all data used by the shaders (e
 
 ## 4. Supplied Files
 
-The programming framework for this assignment is available in the `./lab4` subfolder beneath this page.
+The programming framework for this assignment is available in the `./lab5` subfolder beneath this page.
 
-Under the `./lab4` folder, are subfolders `c` and `c++`, which contain the obvious things. In the C and C++ folders you'll find a file named `header.mak`, for use on the CS systems to help you generate a `Makefile` that will compile and link your program with the libraries used by the framework. See the contents of `header.mak` for details on how to do this. There is also a subfolder named `misc` which contains a shellscript named `compmac` for use on Mac systems.
+Under the `./lab5` folder, are subfolders `c` and `c++`, which contain the obvious things. In the C and C++ folders you'll find a file named `header.mak`, for use on the CS systems to help you generate a `Makefile` that will compile and link your program with the libraries used by the framework. See the contents of `header.mak` for details on how to do this. There is also a subfolder named `misc` which contains a shellscript named `compmac` for use on Mac systems.
 
 ## 5. What to Submit
 
@@ -240,48 +240,37 @@ Your grade will be based on your implementation of the required routine and its 
 
 The lists of situations to be checked in your submission (see below) is not exhaustive the tests run during grading may include other combinations. You may want to modify the test program you are given to cover a wide range of input situations.
 
-### Proper tessellation, 10 points per shape
-* The shapes look correct; there are no extra or missing triangles; the shape does not look inside-out (i.e., correct faces are drawn); etc.
+### Creates a window, 5 points
+* Your code compiles, runs, and produces a stable window.
 
-### Handles parameters, 2 points
-* Changing the parameters correctly changes the degree of tessellation.
+### Correct object transformations, 10 points
 
-### Stability and efficiency, 2 points
-* The program does not crash or have memory leaks; for these simple shapes, increasing the degree of tessellation does not result in overly sluggish performance.
+### Correct camera manipulation, 10 points
 
-### Other Considerations, 6 points
-* Documentation and programming style
+### Correct frustum projection, 10 points
 
+### Correct orthographic projection, 10 points
+
+### Documentation and style, 5 points
 
 ## 7. Notes
 
-You are encouraged to discuss the tessellation algorithms with other students in the class (as well as myself). However, *you must write your own code*. Please **do not use code obtained from the web**. If you've spent time obfuscating a published solution, you are likely *more* than capable of implementing these algorithms yourself; trust me!
+Remember that the driver program will only use the names `shader.vert` and `shader.frag` for the shader programs, so you must copy the `v120` versions if you will be using GLSL 1.20 or the `v150` versions if you will be using GLSL 1.50.
 
-The lecture notes presented in class should help you to get started on this assignment.
+The OpenGL and GLSL lecture notes presented in class should help you to get started on this assignment, as should the files provided with earlier OpenGL assignments.
 
-The cube, cylinder, and cone should all be one unit wide (e.g., for the cube, the faces are all at offsets of 0.5 in the appropriate direction; for the cylinder, the disks have radius 0.5 and are 0.5 units from the origin along the *y* axis; etc.), and each should be centered at the origin.
+Refer back to the "Hello, OpenGL!" programming assignment for information about obtaining and installing GLUT and/or GLEW libraries.
 
-The sphere should also be centered at the origin and should have a diameter of one unit. If you are implementing the recursive subdivision method, remember that the vertex positions for the icosahedron in the lecture notes are for an icosahedron of *radius* one (i.e., *diameter* two). As a result, unless you normalize the vertices and scale by 0.5, the icosahedron will appear distorted because of the position of the camera.
+You have the choice of doing your matrix creation in either the vertex shader or in the OpenGL application itself. Doing this in the vertex shader is simpler, because GLSL provides all the necessary data types and operations to create and manipulate matrices; in the OpenGL application, you will need to either write or acquire a set of matrix manipulation routines. This ease does come with a price, though - creating and manipulating the matrices in the shader means that this will occur separately for every single vertex in the object being drawn, rather than just once, so doing this in the shader is less efficient. However, the objects you will be drawing in this (and later) labs are small enough that efficiency isn't really a problem, so we recommend that you create and manipulate your matrices in the shader (at least for now).
 
-The primary and secondary subdivision numbers are used as follows:
+If you choose to do your matrix manipulation in the OpenGL application instead of in the shader, you'll need to either create your own matrix routines, or use an open-source matrix library. The following libraries are available on the CS Ubuntu systems and are freely available for installation on your own system:
 
-* For the cube, only the primary subdivision value is used, and all faces are subdivided identically. The minimum value of this factor should be one.
+* **C:** [The GNU Scientific Library](http://www.gnu.org/software/gsl/) - GSL version 2.4 is installed on the CS lab machines; the `header.mak` supplied with the framework is set up to automatically link your code using this library.
+* **C++:** [Matrix TCL Pro](http://www.techsoftpl.com/matrix/) - Matrix TCL Pro version 2.2 is available in the course account on the CS systems, in the [~cscix10/lib/matclpro](http://cs.rit.edu/~cscix10/lib/matclpro/) directory. To use it, copy the three files from the [cscix10/lib/matclpro/include](http://cs.rit.edu/~cscix10/lib/matclpro/include/) directory into your working directory, and include the `cmatrix` file using the `#include` format shown in the _What To Submit_ section (above).
+* **C++:** [GLM](http://glm.g-truc.net/0.9.8/) - GLM 0.9.9-a2 is installed on the CS lab machines; for greatest compatibility, you may wish to install that version on your own system.
 
-* For the cone and cylinder, the primary subdivision controls the number of sides on the figure (i.e., the subdivision of the disks), and the secondary subdivision controls the height. The minimum number of sides should be three (i.e., if a value less than three is given for the primary subdivision, use three instead), and the minimum height factor should be one.
+For convenience, archive files for the Matrix TCL Pro 2.2 and GLM 0.9.9-a2 can be found in the course account; see the directory [~cscix10/lib/archives](http://cs.rit.edu/~cscix10/lib/archives) for these files.
 
-* If you are implementing the recursive subdivision version of the sphere, only the primary subdivision value is used. The minimum value of this should be one; for efficiency reasons, you should also set a maximum value of five for this parameter.
-
-* If you are implementing the latitude/longitude version of the sphere, the primary subdivision should control the number of slices per disk (the theta direction) and the secondary subdivision should control the number of stacked disks (the phi direction). The minimum values of each of these should be three.
-
-The `Shapes` files in the framework are all set up to use the bounds described above for the tessellation factors. (For the sphere, the bounds are set for the latitude/longitude version; you will need to modify them if you are using recursive subdivision.)
-
-Refer back to the
-[Hello, OpenGL!](https://www.cs.rit.edu/~jab/courses/csci510/protected/labs/hello/) programming assignment for information about obtaining and installing the GLFW and/or GLEW libraries.
-
-Don't wait until the last minute to submit things! You may, in fact, want to submit even a partially-working solution as you work on it - there is no penalty for making multiple submissions, and this will help ensure that you get _something_ submitted for this assignment.
-
-Do not make any changes to the function prototypes. This means that your implementations must match the prototypes exactly in terms of number,types, and order of parameters. The reason for this is that the test programs assume that your implementations match those prototypes; if you make changes, there will be compilation errors, and even if the test programs link, they almost certainly won't execute correctly (which means you'll lose substantial amounts of credit for incorrect program performance).
-
-The `shader.vert` and `shader.frag` files supplied with the framework require GLSL version 1.50, which is only available with OpenGL 3.2 or newer. If you are attempting to develop your code on a system which doesn't have a new-enough version of GLSL, you'll get error messages when these files are compiled during the execution of your code. The driver program will automatically "fall back" to the alternate shaders if GLSL 1.50 isn't available.
+If you are using one of these libraries unmodified, please do not submit them along with your solutions; we will provide a copy of Matrix TCL Pro in the working directory for C++ submissions, and the other libraries are installed in standard places on the lab machines. However, if you are using a modified version of one of these libraries or a different matrix library, you **must** submit your library along with your solution.
 
 **Ubuntu&reg; is a registered trademark of Canonical Ltd.**
