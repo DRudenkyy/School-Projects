@@ -80,11 +80,14 @@ int Pipeline::addPoly( const Vertex p[], int n )
 ///
 void Pipeline::drawPoly( int polyID )
 {
+	//polygon we will be working with
 	Polygon* thisPoly = polyArray[polyID];
 
+	//declaration needed for matrix math loop
 	Vertex vert;
 	glm::vec3 coords;
 	
+	//clipped polygon data
 	Vertex outV[50];
 	int n = clipPolygon(thisPoly, outV);
 	
@@ -107,6 +110,8 @@ void Pipeline::drawPoly( int polyID )
 	processScanLines();
 }
 
+//using viewport and clipping boundary information generate a matrix
+//that will convert a worldview vertex into the desired viewport vertex
 void Pipeline::genWorldToViewMatrix()
 {
 	//boundaries						viewport
