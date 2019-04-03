@@ -14,6 +14,8 @@
 
 #include "Canvas.h"
 #include "Vertex.h"
+#include <glm/vec3.hpp> // glm::vec3
+#include <glm/mat3x3.hpp> // glm::mat4
 
 using namespace std;
 
@@ -50,6 +52,12 @@ public:
 	//and when to check vertex < boundary (inside for right and top)
 	//and vertex > boundary (inside for left and bottom).
 	float boundaries[4];	//top right bottom left
+	
+	//holds viewport coordinates
+	int viewPort[4];	//xmin, ymin, width, height
+	
+	glm::mat3 transformMatrix;	//holds current transformations
+	glm::mat3 worldToViewMatrix;	//holds world-to-viewport matrix
     
     //We are guaranteed a 500-pixel vertical resolution
 	//I am using this as a crutch since I spent way too much time 
@@ -148,6 +156,8 @@ public:
     // @param height - width of view window (in world coords)
     ///
     void setViewport( int x, int y, int width, int height );
+    
+    void genWorldToViewMatrix();
 
 
 	//Clipping Related Functions--------------------------------------------

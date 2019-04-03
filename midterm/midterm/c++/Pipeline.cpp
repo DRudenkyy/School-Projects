@@ -12,6 +12,7 @@
 #include <iostream>
 #include "Pipeline.h"
 #include <cmath>
+#include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 
 ///
 // Simple wrapper class for midterm assignment
@@ -80,20 +81,45 @@ int Pipeline::addPoly( const Vertex p[], int n )
 void Pipeline::drawPoly( int polyID )
 {
 	Polygon* thisPoly = polyArray[polyID];
-	if(boundaries[2] == 0)	//default boundaries
-	{
-		initializeEdgeTable();
-		allocateEdgeTable(thisPoly->n, thisPoly->p);
-	}
-	else
-	{
-		Vertex outV[50];
-		int n = clipPolygon(thisPoly, outV);
-		initializeEdgeTable();
-		allocateEdgeTable(n, outV);
-	}
-	processScanLines();
 
+	Vertex outV[50];
+	int n = clipPolygon(thisPoly, outV);
+	
+
+	
+	initializeEdgeTable();
+	allocateEdgeTable(n, outV);
+	processScanLines();
+}
+
+void Pipeline::genWorldToViewMatrix()
+{
+	//boundaries
+	//0    1    2      3
+	//top right bottom left
+	
+	//viewport
+	//0 1 2     3
+	//x y width height
+	
+	float xdMin = viewPort[0];
+	float xdMax = xdMin + viewPort[2];
+	float ydMin = viewPort[1];
+	float ydMax = ydMin + viewPort[3];
+	
+	float topL = float( (xdMax - xdMin) / (boundaries[1] - boundaries[3]) );
+	
+	float topR = float( (boundaries[1] * xdMin - boundaries[3] * xdMax)
+					  /	(boundaries[1] - boundaries[3]) );
+					  
+	float mid = float( (ydMax - ydMin) / (boundaries[0] - boundaries[2]) );
+	
+	float midR = float( (boundaries[0] * ydMin - boundaries[2] * ydMax)
+					  /	(boundaries[1] - boundaries[3]) );
+					  
+	worldToViewMatrix = glm::mat3(topL, 0.0, topR,
+								  0.0, mid, midR,
+								  0.0, 0.0, 1.0);
 }
 
 ///
@@ -101,7 +127,9 @@ void Pipeline::drawPoly( int polyID )
 ///
 void Pipeline::clearTransform( void )
 {
-    // YOUR IMPLEMENTATION HERE
+    transformMatrix = glm::mat3(1.0, 0.0, 0.0,
+								0.0, 1.0, 0.0,
+								0.0, 0.0, 1.0);
 }
 
 ///
@@ -114,7 +142,11 @@ void Pipeline::clearTransform( void )
 ///
 void Pipeline::translate( float tx, float ty )
 {
-    // YOUR IMPLEMENTATION HERE
+    glm::mat3 translationMatrix = glm::mat3(1.0, 0.0, tx,
+											0.0, 1.0, ty,
+											0.0, 0.0, 1.0);
+											
+	transformMatrix = transformMatrix * translationMatrix;
 }
 
 ///
@@ -126,7 +158,12 @@ void Pipeline::translate( float tx, float ty )
 ///
 void Pipeline::rotate( float degrees )
 {
-    // YOUR IMPLEMENTATION HERE
+	float radians = glm::radians(degrees);
+    glm::mat3 rotationMatrix = glm::mat3(cos(radians), -sin(radians), 0.0,
+										 sin(radians), cos(radians), 0.0,
+										 0.0, 			0.0, 		1.0);
+										 
+	transformMatrix = rotationMatrix * transformMatrix;
 }
 
 ///
@@ -139,7 +176,11 @@ void Pipeline::rotate( float degrees )
 ///
 void Pipeline::scale( float sx, float sy )
 {
-    // YOUR IMPLEMENTATION HERE
+    glm::mat3 scaleMatrix = glm::mat3(sx, 0.0, 0.0, 
+									  0.0, sy, 0.0, 
+									  0.0, 0.0, 1.0);
+									  
+	transformMatrix = transformMatrix * scaleMatrix;
 }
 
 ///
@@ -168,7 +209,10 @@ void Pipeline::setClipWindow( float bottom, float top, float left, float right )
 ///
 void Pipeline::setViewport( int x, int y, int width, int height )
 {
-    // YOUR IMPLEMENTATION HERE
+    viewPort[0] = x;
+    viewPort[1] = y;
+    viewPort[2] = width;
+    viewPort[3] = height;
 }
 
 
