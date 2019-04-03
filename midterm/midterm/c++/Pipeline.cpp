@@ -82,10 +82,25 @@ void Pipeline::drawPoly( int polyID )
 {
 	Polygon* thisPoly = polyArray[polyID];
 
+	Vertex vert;
+	glm::vec3 coords;
+	
 	Vertex outV[50];
 	int n = clipPolygon(thisPoly, outV);
 	
-
+	genWorldToViewMatrix();
+	
+	//apply matrix transformations to each coordinate
+	for(int i = 0; i < n; i++)
+	{
+		vert = outV[i];	//pull out this vertex
+		coords = glm::vec3(vert.x, vert.y, 1.0);	//set it to a coordinate
+		coords = coords * transformMatrix;	//apply transformation matrix
+		coords = coords * worldToViewMatrix;	//apply viewport matrix
+		vert.x = coords[0];
+		vert.y = coords[1];
+		outV[i] = vert;	//update this vertex with matrix math applied
+	}
 	
 	initializeEdgeTable();
 	allocateEdgeTable(n, outV);
@@ -94,13 +109,9 @@ void Pipeline::drawPoly( int polyID )
 
 void Pipeline::genWorldToViewMatrix()
 {
-	//boundaries
-	//0    1    2      3
-	//top right bottom left
-	
-	//viewport
-	//0 1 2     3
-	//x y width height
+	//boundaries						viewport
+	//0    1    2      3				0 1 2     3
+	//top right bottom left				x y width height
 	
 	float xdMin = viewPort[0];
 	float xdMax = xdMin + viewPort[2];
@@ -116,6 +127,7 @@ void Pipeline::genWorldToViewMatrix()
 	
 	float midR = float( (boundaries[0] * ydMin - boundaries[2] * ydMax)
 					  /	(boundaries[1] - boundaries[3]) );
+					  
 					  
 	worldToViewMatrix = glm::mat3(topL, 0.0, topR,
 								  0.0, mid, midR,
@@ -158,6 +170,7 @@ void Pipeline::translate( float tx, float ty )
 ///
 void Pipeline::rotate( float degrees )
 {
+	//glm expects arguments for trig functions as radians
 	float radians = glm::radians(degrees);
     glm::mat3 rotationMatrix = glm::mat3(cos(radians), -sin(radians), 0.0,
 										 sin(radians), cos(radians), 0.0,
@@ -399,7 +412,6 @@ void Pipeline::processScanLines()
 	//go through all y pixels on the screen and process them
 	for(int y = firstEdgeYval; y < MAX_SCANLINES; y++)
 	{		
-		cerr << y << endl;
 		//drop from activeList if necessary
 		if(activeEdgeList != nullptr)
 			discardYMaxEdges(y);
@@ -561,7 +573,6 @@ EdgeBucket* Pipeline::swapBucketValues(EdgeBucket* bucket)
 //loop through given vertices and prep the edgeTable
 void Pipeline::allocateEdgeTable(int n, Vertex v[])
 {
-	cerr << "STRT";
 	for(int i = 0; i < n; i ++)
     {
 		float yMin, yMax;
@@ -610,7 +621,6 @@ void Pipeline::allocateEdgeTable(int n, Vertex v[])
 			}
 		}
 	}
-	cerr << "END" << endl;
 }
 
 //debugging function
