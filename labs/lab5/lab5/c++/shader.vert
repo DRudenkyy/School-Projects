@@ -54,7 +54,7 @@ Tuple alt_xlate =  { -0.2f, 0.2f, 0.0f };
  *  just as if one had simply created a local variable.
 */
 
-
+//set the projection matrix to frustum 
 void setFrustum(out mat4 projection) {
 	projection = mat4((2 * near) / (right - left), 0, 0, 0,
 		0, (2 * near) / (top - bottom), 0, 0,
@@ -62,6 +62,7 @@ void setFrustum(out mat4 projection) {
 		0, 0, (-2 * far * near) / (far - near), 0);
 }
 
+//set the projection matrix to ortho
 void setOrtho(out mat4 projection) {
 	projection = mat4(2 / (right - left), 0, 0, 0,
 		0, 2 / (top - bottom), 0, 0,
@@ -69,17 +70,46 @@ void setOrtho(out mat4 projection) {
 		(right + left) / (right - left), (top + bottom) / (top - bottom), (-2 * far * near) / (far - near), 0);
 }
 
+void setView(out mat4 view) {
+	//GLSL functions I will be using (from lighthouse3d.com)
+	//normalize — calculates the unit vector in the same direction as 
+	//	the original vector
+	//cross - The cross product takes two vectors and returns a 
+	//	perpendicular vector to the plane defined by the two vectors
+	//dot - The dot product, aka inner product, takes two vectors and 
+	//	returns a scalar value. It is an easy way to compute the cosine 
+	//between two vectors.
+	
+	//n = normalize( eyepoint - lookat )
+	vec3 n = normalize(ey - la);
+	
+	//u = normalize( normalize( up ) x n )
+	vec3 u = normalize(cross(normalize(up), n));
+	
+	//v = normalize( n x u ) 
+	vec3 v = normalize(cross(n, u));
+	
+	view = mat4(0, 0, 0, 0,
+				0, 0, 0, 0,
+				0, 0, 0, 0,
+				0, 0, 0, 1);
+}
+
 //The vertex shader is responsible for at least writing a variable: gl_Position, 
 //usually transforming the vertex with the modelview and projection matrices.
 void main()
 {
-	mat4 projection;
+	mat4 projection, view;
 
+	//set the projection matrix
 	if (projectionType == 1) {
 		setFrustum(projection);
 	}
 	else {
 		setOrtho(projection);
 	}
+	
+	setView(view);
+	
     gl_Position =  projection * vPosition;
 }

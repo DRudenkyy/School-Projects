@@ -103,7 +103,10 @@ void setUpTransforms( GLuint program, Tuple scale, Tuple rotate, Tuple xlate )
 ///
 void clearCamera( GLuint program )
 {
-    // Add your code here.
+    glUniform3f(glGetUniformLocation(program, "ey"), 0.0, 0.0, 0.0);
+	glUniform3f(glGetUniformLocation(program, "la"), 0.0, 0.0, -1.0);
+    glUniform3f(glGetUniformLocation(program, "up"), 0.0, 1.0, 0.0);
+
 }
 
 ///
