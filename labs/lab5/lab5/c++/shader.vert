@@ -42,10 +42,44 @@ Tuple alt_rotate = { 0.0f, 10.0f, 335.0f };
 Tuple alt_xlate =  { -0.2f, 0.2f, 0.0f };
 */
 
+//https://www.khronos.org/opengl/wiki/Core_Language_(GLSL)
+//example of a function in GLSL
+//void MyFunction(in float inputValue, out int outputValue, inout float inAndOutValue);
+//Functions in GLSL use a calling convention called "value-return."
+/*A parameter declared as out will not have its value initialized by the caller. 
+ * The function will modify the parameter, and after the function's execution is 
+ * complete, the value of the parameter will be copied out into the variable 
+ * that the user specified when calling the function. Note that the initial 
+ * value of the parameter at the start of the function being called is undefined,
+ *  just as if one had simply created a local variable.
+*/
+
+
+void setFrustum(out mat4 projection) {
+	projection = mat4((2 * near) / (right - left), 0, 0, 0,
+		0, (2 * near) / (top - bottom), 0, 0,
+		(right + left) / (right - left), (top + bottom) / (top - bottom), -(far + near) / (far - near), -1,
+		0, 0, (-2 * far * near) / (far - near), 0);
+}
+
+void setOrtho(out mat4 projection) {
+	projection = mat4(2 / (right - left), 0, 0, 0,
+		0, 2 / (top - bottom), 0, 0,
+		0, 0, -(far + near) / (far - near), -1,
+		(right + left) / (right - left), (top + bottom) / (top - bottom), (-2 * far * near) / (far - near), 0);
+}
+
 //The vertex shader is responsible for at least writing a variable: gl_Position, 
 //usually transforming the vertex with the modelview and projection matrices.
 void main()
 {
-    // By default, no transformations are performed.
-    gl_Position =  vPosition;
+	mat4 projection;
+
+	if (projectionType == 1) {
+		setFrustum(projection);
+	}
+	else {
+		setOrtho(projection);
+	}
+    gl_Position =  projection * vPosition;
 }

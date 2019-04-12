@@ -52,7 +52,7 @@ void setUpProjection( GLuint program, ViewMode mode )
 			std::cerr << "Invalid viewmode";
 			break;
 	}
-    glUniform1f(glGetUniformLocation(program, "projectionType"), setMode);
+    glUniform1i(glGetUniformLocation(program, "projectionType"), setMode);
 }
 
 ///
