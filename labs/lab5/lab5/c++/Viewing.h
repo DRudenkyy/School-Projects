@@ -28,6 +28,8 @@
 
 #include "Tuple.h"
 
+#include <iostream>
+
 ///
 // Viewing modes
 ///

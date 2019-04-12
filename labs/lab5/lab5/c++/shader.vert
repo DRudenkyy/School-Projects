@@ -11,8 +11,10 @@
 // attribute:  vertex position
 attribute vec4 vPosition;
 
-// Projection settings: regardless of the projection type being used, 
-// the boundaries on the view volume will be
+uniform int projectionType;
+
+//Projection settings: regardless of the projection type being used, 
+//the boundaries on the view volume will be
 float left = -1.0,
 	right = 1.0,
 	top = 1.0,
@@ -21,7 +23,7 @@ float left = -1.0,
 	far = 4.5;
 	
 //parameters
-uniform vec3 ey; // view
+uniform vec3 ey; //camera/view settings
 uniform vec3 la;
 uniform vec3 up;
 /*
@@ -30,7 +32,7 @@ Tuple alt_eye =    { 0.0f, 1.3f, -0.5f };
 Tuple alt_lookat = { 0.0f, -0.4f, -1.0f };
 Tuple alt_up =     { 0.0f, 1.0f, 0.0f };
 */
-uniform vec3 sc; // transformation
+uniform vec3 sc; //model transformation
 uniform vec3 ro;
 uniform vec3 tr;
 /*
@@ -40,6 +42,8 @@ Tuple alt_rotate = { 0.0f, 10.0f, 335.0f };
 Tuple alt_xlate =  { -0.2f, 0.2f, 0.0f };
 */
 
+//The vertex shader is responsible for at least writing a variable: gl_Position, 
+//usually transforming the vertex with the modelview and projection matrices.
 void main()
 {
     // By default, no transformations are performed.

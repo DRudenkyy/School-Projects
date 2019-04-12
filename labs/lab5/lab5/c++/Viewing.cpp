@@ -39,7 +39,20 @@
 ///
 void setUpProjection( GLuint program, ViewMode mode )
 {
-    // Add your code here.
+	int setMode = -1;
+	switch(mode)
+	{
+		case Frustum:
+			setMode = 1;
+			break;
+		case Ortho:
+			setMode = 0;
+			break;
+		default:
+			std::cerr << "Invalid viewmode";
+			break;
+	}
+    glUniform1f(glGetUniformLocation(program, "projectionType"), setMode);
 }
 
 ///
