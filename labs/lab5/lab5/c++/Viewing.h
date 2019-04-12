@@ -10,7 +10,7 @@
 //
 //  This code can be compiled as either C or C++.
 //
-//  Contributor:  YOUR_NAME_HERE
+//  Contributor:  Dmytro Rudenkyy
 ///
 
 #ifndef _VIEWING_H_

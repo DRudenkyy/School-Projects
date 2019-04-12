@@ -3,7 +3,7 @@
 //
 // Created by Warren R. Carithers 2016/04/22.
 //
-// Contributor:  YOUR_NAME_HERE
+// Contributor:  Dmytro Rudenkyy
 //
 
 #version 120
