@@ -127,22 +127,23 @@ void setRotate(out mat4 r) {
 	
 	//from Z towards Y
 	mat4 aboutX = mat4(1, 0, 0, 0,
-				  0, cos(rx), sin(rx), 0,
-				  0, -sin(rx), cos(rx), 0,
-				  0, 0, 0, 1);
+						0, cos(rx), sin(rx), 0,
+						0, -sin(rx), cos(rx), 0,
+						0, 0, 0, 1);
 			 
 	//from X towards Z
 	mat4 aboutY = mat4(cos(ry), 0, -sin(ry), 0,
-				  0, 1, 0, 0,
-				  sin(ry), 0, cos(ry), 0,
-				  0, 0, 0, 1);
+						0, 1, 0, 0,
+						sin(ry), 0, cos(ry), 0,
+						0, 0, 0, 1);
 	
 	//from X towards Y
 	mat4 aboutZ = mat4(cos(rz), sin(rz), 0, 0,
-				  -sin(rz), cos(rz), 0, 0,
-				  0, 0, 1, 0,
-				  0, 0, 0, 1);
+						-sin(rz), cos(rz), 0, 0,
+						0, 0, 1, 0,
+						0, 0, 0, 1);
 			 
+	//multiply all matrices to get final solution
 	r = aboutZ * aboutY * aboutX;
 	
 }
@@ -169,5 +170,7 @@ void main()
 	
 	finalTranslation = s * r * t;
 	
-    gl_Position = projection * view * vPosition;
+    gl_Position = projection * view * s * t * vPosition;
+    //uncomment for rotation matrix included
+    //gl_Position = projection * view * finalTranslation * vPosition;
 }
