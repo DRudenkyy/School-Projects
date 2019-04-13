@@ -70,6 +70,7 @@ void setOrtho(out mat4 projection) {
 		(right + left) / (right - left), (top + bottom) / (top - bottom), (-2 * far * near) / (far - near), 0);
 }
 
+//set the view/camera matrix
 void setView(out mat4 view) {
 	//GLSL functions I will be using (from lighthouse3d.com)
 	//normalize — calculates the unit vector in the same direction as 
@@ -95,11 +96,53 @@ void setView(out mat4 view) {
 				(-1 * (dot(u, ey))), (-1 * (dot(v, ey))), (-1 * (dot(n, ey))), 1);
 }
 
+//set translation matrix
+void setTranslate(out mat4 t) {
+	t = mat4(1, 0, 0, 0,
+			 0, 1, 0, 0,
+			 0, 0, 1, 0,
+			 tr.x, tr.y, tr.z, 1);
+	
+}
+
+//set scaling matrix
+void setScale(out mat4 s) {
+	s = mat4(sc.x, 0, 0, 0,
+			 0, sc.y, 0, 0,
+			 0, 0, sc.z, 0,
+			 0, 0, 0, 1);
+	
+}
+
+//set rotation matrix
+void setRotate(out mat4 r) {
+	mat4 aboutX = mat4(0, 0, 0, 0,
+				  0, 0, 0, 0,
+				  0, 0, 0, 0,
+				  0, 0, 0, 1);
+			 
+	mat4 aboutY = mat4(0, 0, 0, 0,
+				  0, 0, 0, 0,
+				  0, 0, 0, 0,
+				  0, 0, 0, 1);
+			 
+	mat4 aboutZ = mat4(0, 0, 0, 0,
+				  0, 0, 0, 0,
+				  0, 0, 0, 0,
+				  0, 0, 0, 1);
+			 
+	r = mat4(1, 0, 0, 0,
+			 0, 1, 0, 0,
+			 0, 0, 1, 0,
+			 0, 0, 0, 1);
+	
+}
+
 //The vertex shader is responsible for at least writing a variable: gl_Position, 
 //usually transforming the vertex with the modelview and projection matrices.
 void main()
 {
-	mat4 projection, view;
+	mat4 projection, view, s, r, t, finalTranslation;
 
 	//set the projection matrix
 	if (projectionType == 1) {
@@ -111,5 +154,11 @@ void main()
 	
 	setView(view);
 	
-    gl_Position =  projection * view * vPosition;
+	setScale(s);
+	setRotate(r);
+	setTranslate(t);
+	
+	finalTranslation = s * r * t;
+	
+    gl_Position = finalTranslation * projection * view * vPosition;
 }

@@ -68,7 +68,9 @@ void setUpProjection( GLuint program, ViewMode mode )
 ///
 void clearTransforms( GLuint program )
 {
-    // Add your code here.
+    glUniform3f(glGetUniformLocation(program, "sc"), 1.0, 1.0, 1.0);
+	glUniform3f(glGetUniformLocation(program, "ro"), 0.0, 0.0, 0.0);
+    glUniform3f(glGetUniformLocation(program, "tr"), 0.0, 0.0, 0.0);
 }
 
 ///
@@ -87,7 +89,9 @@ void clearTransforms( GLuint program )
 ///
 void setUpTransforms( GLuint program, Tuple scale, Tuple rotate, Tuple xlate )
 {
-    // Add your code here.
+    glUniform3f(glGetUniformLocation(program, "sc"), scale.x, scale.y, scale.z);
+	glUniform3f(glGetUniformLocation(program, "ro"), rotate.x, rotate.y, rotate.z);
+    glUniform3f(glGetUniformLocation(program, "tr"), xlate.x, xlate.y, xlate.z);
 }
 
 ///
