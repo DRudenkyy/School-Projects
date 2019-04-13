@@ -89,10 +89,10 @@ void setView(out mat4 view) {
 	//v = normalize( n x u ) 
 	vec3 v = normalize(cross(n, u));
 	
-	view = mat4(0, 0, 0, 0,
-				0, 0, 0, 0,
-				0, 0, 0, 0,
-				0, 0, 0, 1);
+	view = mat4(u.x, v.x, n.x, 0,
+				u.y, v.y, n.y, 0,
+				u.z, v.z, n.z, 0,
+				(-1 * (dot(u, ey))), (-1 * (dot(v, ey))), (-1 * (dot(n, ey))), 1);
 }
 
 //The vertex shader is responsible for at least writing a variable: gl_Position, 
@@ -111,5 +111,5 @@ void main()
 	
 	setView(view);
 	
-    gl_Position =  projection * vPosition;
+    gl_Position =  projection * view * vPosition;
 }

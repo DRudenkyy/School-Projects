@@ -106,7 +106,6 @@ void clearCamera( GLuint program )
     glUniform3f(glGetUniformLocation(program, "ey"), 0.0, 0.0, 0.0);
 	glUniform3f(glGetUniformLocation(program, "la"), 0.0, 0.0, -1.0);
     glUniform3f(glGetUniformLocation(program, "up"), 0.0, 1.0, 0.0);
-
 }
 
 ///
@@ -124,5 +123,7 @@ void clearCamera( GLuint program )
 ///
 void setUpCamera( GLuint program, Tuple eye, Tuple lookat, Tuple up )
 {
-    // Add your code here.
+    glUniform3f(glGetUniformLocation(program, "ey"), eye.x, eye.y, eye.z);
+	glUniform3f(glGetUniformLocation(program, "la"), lookat.x, lookat.y, lookat.z);
+    glUniform3f(glGetUniformLocation(program, "up"), up.x, up.y, up.z);
 }
