@@ -33,7 +33,7 @@ Tuple alt_lookat = { 0.0f, -0.4f, -1.0f };
 Tuple alt_up =     { 0.0f, 1.0f, 0.0f };
 */
 uniform vec3 sc; //model transformation
-uniform vec3 ro;
+uniform vec3 ro;	//in degrees
 uniform vec3 tr;
 /*
 //used to apply transformation values from main
@@ -64,10 +64,11 @@ void setFrustum(out mat4 projection) {
 
 //set the projection matrix to ortho
 void setOrtho(out mat4 projection) {
-	projection = mat4(2 / (right - left), 0, 0, 0,
-		0, 2 / (top - bottom), 0, 0,
-		0, 0, -(far + near) / (far - near), -1,
-		(right + left) / (right - left), (top + bottom) / (top - bottom), (-2 * far * near) / (far - near), 0);
+	
+	projection = mat4(2.0 / (right - left), 0, 0, 0,
+		0, 2.0 / (top - bottom), 0, 0,
+		0, 0, (-2.0/(far - near)), 0,
+		-(right + left) / (right - left), -(top + bottom) / (top - bottom), -(far + near) / (far - near), 1);
 }
 
 //set the view/camera matrix
@@ -116,25 +117,33 @@ void setScale(out mat4 s) {
 
 //set rotation matrix
 void setRotate(out mat4 r) {
-	mat4 aboutX = mat4(0, 0, 0, 0,
-				  0, 0, 0, 0,
-				  0, 0, 0, 0,
+	
+	//convert rotation vector to radian floats
+	float rx = radians(ro.x);	
+	float ry = radians(ro.y);
+	float rz = radians(ro.z);
+
+	//breaking down rotation into three seperate matrices
+	
+	//from Z towards Y
+	mat4 aboutX = mat4(1, 0, 0, 0,
+				  0, cos(rx), sin(rx), 0,
+				  0, -sin(rx), cos(rx), 0,
 				  0, 0, 0, 1);
 			 
-	mat4 aboutY = mat4(0, 0, 0, 0,
-				  0, 0, 0, 0,
-				  0, 0, 0, 0,
+	//from X towards Z
+	mat4 aboutY = mat4(cos(ry), 0, -sin(ry), 0,
+				  0, 1, 0, 0,
+				  sin(ry), 0, cos(ry), 0,
+				  0, 0, 0, 1);
+	
+	//from X towards Y
+	mat4 aboutZ = mat4(cos(rz), sin(rz), 0, 0,
+				  -sin(rz), cos(rz), 0, 0,
+				  0, 0, 1, 0,
 				  0, 0, 0, 1);
 			 
-	mat4 aboutZ = mat4(0, 0, 0, 0,
-				  0, 0, 0, 0,
-				  0, 0, 0, 0,
-				  0, 0, 0, 1);
-			 
-	r = mat4(1, 0, 0, 0,
-			 0, 1, 0, 0,
-			 0, 0, 1, 0,
-			 0, 0, 0, 1);
+	r = aboutZ * aboutY * aboutX;
 	
 }
 
@@ -160,5 +169,5 @@ void main()
 	
 	finalTranslation = s * r * t;
 	
-    gl_Position = finalTranslation * projection * view * vPosition;
+    gl_Position = projection * view * vPosition;
 }
