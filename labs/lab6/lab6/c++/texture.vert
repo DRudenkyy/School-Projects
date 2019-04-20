@@ -2,7 +2,7 @@
 
 // Texture mapping vertex shader
 //
-// Contributor:  YOUR_NAME_HERE
+// Contributor:  Dmytro Rudenkyy
 
 // INCOMING DATA
 

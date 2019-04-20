@@ -6,7 +6,7 @@
 //  Updated 2018/11/29 by wrc.
 //  Copyright 2016 Rochester Institute of Technology.  All rights reserved.
 //
-//  Contributor:  YOUR_NAME_NERE
+//  Contributor:  Dmytro Rudenkyy
 //
 //  Simple class for setting up Phong illumination/shading.
 //
