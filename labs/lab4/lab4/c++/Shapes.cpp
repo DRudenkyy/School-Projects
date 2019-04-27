@@ -12,6 +12,8 @@
 ///
 
 #include <cmath>
+using namespace std;
+#include <iostream>
 
 // Canvas.h pulls in all the OpenGL/GLFW/etc. header files for us
 #include "Shapes.h"
@@ -34,7 +36,38 @@ void makeCube( Canvas &C, int subdivisions )
     if( subdivisions < 1 )
         subdivisions = 1;
 
-    // YOUR IMPLEMENTATION HERE
+    float Q[subdivisions+1];
+    Vertex P[subdivisions+1][subdivisions+1];
+    float u=0,v=0;
+    //front face: z=0.5
+    for(int i=0;i<=subdivisions;i++){//create vertices
+		//determine y values
+		u=((float)i)/subdivisions;
+		Q[i]=((1-u)*-.5)+u*.5;
+		for(int j=0;j<=subdivisions;j++){
+			//determine x values
+			v=((float)j)/subdivisions;
+			P[i][j].x=((1-v)*-.5)+v*.5;
+			P[i][j].y=Q[i];
+			P[i][j].z=0.5;
+		}
+	}
+	for(int i=0;i<subdivisions;i++){//add triangles
+		for(int j=0;j<subdivisions;j++){
+			C.addTriangle(P[i][j], P[i+1][j+1], P[i+1][j]);//upper triangle
+			C.addTriangle(P[i][j], P[i][j+1], P[i+1][j+1]);//lower triangle
+			cerr << "upper" << i << j << ": (" <<  
+			P[i][j].x << ", " << P[i][j].y << ", " << P[i][j].z << ") (" <<
+			P[i+1][j+1].x <<  ", " << P[i+1][j+1].y << ", " << P[i+1][j+1].z << ") (" <<
+			P[i+1][j].x << ", " << P[i+1][j].y << ", " << P[i+1][j].z << ") " << endl;
+			
+			cerr << "lower" << i << j << ": (" <<  
+			P[i][j].x << ", " << P[i][j].y << ", " << P[i][j].z << ") (" <<
+			P[i][j+1].x << ", " << P[i][j+1].y << ", " << P[i][j+1].z << ") (" <<
+			P[i+1][j+1].x << ", " << P[i+1][j+1].y << ", " << P[i+1][j+1].z << ") " << endl;
+		}
+	}
+	
 }
 
 ///
