@@ -8,7 +8,7 @@
 //
 //  Author:  Warren R. Carithers 2017/04/01.
 //
-//  Contributor:  YOUR_NAME_HERE
+//  Contributor:  Dmytro Rudenkyy
 ///
 
 #include <cmath>
@@ -17,6 +17,8 @@
 #include "Shapes.h"
 #include "Canvas.h"
 #include "Vertex.h"
+
+#define PI 3.14159265358979323846;
 
 ///
 // makeCube - Create a unit cube, centered at the origin, with a given number
