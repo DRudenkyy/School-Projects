@@ -68,6 +68,107 @@ void makeCube( Canvas &C, int subdivisions )
 		}
 	}
 	
+	//back face: z=-0.5
+    for(int i=0;i<=subdivisions;i++){//create vertices
+		//determine y values
+		u=((float)i)/subdivisions;
+		Q[i]=((1-u)*-.5)+u*.5;
+		for(int j=0;j<=subdivisions;j++){
+			//determine x values
+			v=((float)j)/subdivisions;
+			P[i][j].x=((1-v)*-.5)+v*.5;
+			P[i][j].y=Q[i];
+			P[i][j].z=-0.5;
+		}
+	}
+	for(int i=0;i<subdivisions;i++){//add triangles
+		for(int j=0;j<subdivisions;j++){
+			C.addTriangle(P[i][j], P[i+1][j], P[i+1][j+1]);//upper triangle
+			C.addTriangle(P[i][j], P[i+1][j+1], P[i][j+1]);//lower triangle
+		}
+	}
+	
+	//left face: x=-0.5
+    for(int i=0;i<=subdivisions;i++){//create vertices
+		//determine y values
+		u=((float)i)/subdivisions;
+		Q[i]=((1-u)*-.5)+u*.5;
+		for(int j=0;j<=subdivisions;j++){
+			//determine x values
+			v=((float)j)/subdivisions;
+			P[i][j].z=((1-v)*-.5)+v*.5;
+			P[i][j].y=Q[i];
+			P[i][j].x=-0.5;
+		}
+	}
+	for(int i=0;i<subdivisions;i++){//add triangles
+		for(int j=0;j<subdivisions;j++){
+			C.addTriangle(P[i][j], P[i+1][j+1], P[i+1][j]);//upper triangle
+			C.addTriangle(P[i][j], P[i][j+1], P[i+1][j+1]);//lower triangle
+		}
+	}
+	
+	//right face: x = 0.5
+    for(int i=0;i<=subdivisions;i++){//create vertices
+		//determine y values
+		u=((float)i)/subdivisions;
+		Q[i]=((1-u)*-.5)+u*.5;
+		for(int j=0;j<=subdivisions;j++){
+			//determine x values
+			v=((float)j)/subdivisions;
+			P[i][j].z=((1-v)*-.5)+v*.5;
+			P[i][j].y=Q[i];
+			P[i][j].x=0.5;
+		}
+	}
+	for(int i=0;i<subdivisions;i++){//add triangles
+		for(int j=0;j<subdivisions;j++){
+			C.addTriangle(P[i][j], P[i+1][j], P[i+1][j+1]);//upper triangle
+			C.addTriangle(P[i][j], P[i+1][j+1], P[i][j+1]);//lower triangle
+		}
+	}
+	
+	
+	//top face: y=0.5
+    for(int i=0;i<=subdivisions;i++){//create vertices
+		//determine y values
+		u=((float)i)/subdivisions;
+		Q[i]=((1-u)*-.5)+u*.5;
+		for(int j=0;j<=subdivisions;j++){
+			//determine x values
+			v=((float)j)/subdivisions;
+			P[i][j].z=((1-v)*-.5)+v*.5;
+			P[i][j].x=Q[i];
+			P[i][j].y=0.5;
+		}
+	}
+	for(int i=0;i<subdivisions;i++){//add triangles
+		for(int j=0;j<subdivisions;j++){
+			C.addTriangle(P[i][j], P[i+1][j+1], P[i+1][j]);//upper triangle
+			C.addTriangle(P[i][j], P[i][j+1], P[i+1][j+1]);//lower triangle
+		}
+	}
+	
+	//bottom face: y=-0.5
+    for(int i=0;i<=subdivisions;i++){//create vertices
+		//determine y values
+		u=((float)i)/subdivisions;
+		Q[i]=((1-u)*-.5)+u*.5;
+		for(int j=0;j<=subdivisions;j++){
+			//determine x values
+			v=((float)j)/subdivisions;
+			P[i][j].z=((1-v)*-.5)+v*.5;
+			P[i][j].x=Q[i];
+			P[i][j].y=-0.5;
+		}
+	}
+	for(int i=0;i<subdivisions;i++){//add triangles
+		for(int j=0;j<subdivisions;j++){
+			C.addTriangle(P[i][j], P[i+1][j], P[i+1][j+1]);//upper triangle
+			C.addTriangle(P[i][j], P[i+1][j+1], P[i][j+1]);//lower triangle
+		}
+	}
+	
 }
 
 ///
