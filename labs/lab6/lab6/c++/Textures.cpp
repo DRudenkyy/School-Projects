@@ -31,6 +31,8 @@ using namespace std;
 #endif
 
 // Add any global definitions and/or variables you need here.
+GLuint smiley2_texture;
+GLuint frowny2_texture;
 
 ///
 // This function loads texture data for the GPU.
@@ -40,7 +42,27 @@ using namespace std;
 ///
 void loadTextures( void )
 {
-    // Add your code here.
+    smiley2_texture = SOIL_load_OGL_texture(
+		"../images/smiley2.png",
+		SOIL_LOAD_AUTO,
+		SOIL_CREATE_NEW_ID,
+		SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y);
+	
+    if(0 == smiley2_texture)
+    {
+        printf("SOIL loading error: '%s'\n", SOIL_last_result());
+    }
+
+    frowny2_texture = SOIL_load_OGL_texture(
+		"../images/frowny2.png",
+		SOIL_LOAD_AUTO,
+		SOIL_CREATE_NEW_ID,
+		SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y);
+	
+    if(0 == frowny2_texture)
+    {
+        printf("SOIL loading error: '%s'\n", SOIL_last_result());
+    }
 }
 
 ///
@@ -55,5 +77,14 @@ void loadTextures( void )
 ///
 void setUpTextures( GLuint program, int obj )
 {
-    // Add your code here.
+    if (obj == OBJ_QUAD)
+    {
+        glBindTexture(GL_TEXTURE_2D, smiley2_texture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glBindTexture(GL_TEXTURE_2D, frowny2_texture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    }
 }

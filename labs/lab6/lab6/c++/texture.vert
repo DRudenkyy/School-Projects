@@ -42,6 +42,8 @@ uniform float far;
 // add all necessary variables for communicating with
 // the fragment shader here
 
+out vec2 texCoord;
+
 // Inversion code for 2x2, 3x3, and 4x4 matrices by Mikola Lysenko.
 // Origin: https://github.com/glslify/glsl-inverse/blob/master/index.glsl
 //
@@ -200,4 +202,7 @@ void main()
 
     // Transform the vertex location into clip space
     gl_Position =  projMat * viewMat  * modelMat * vPosition;
+
+    // Pass through the texture coordinates for interpolation in the frag shader
+    texCoord = vTexCoord;
 }
