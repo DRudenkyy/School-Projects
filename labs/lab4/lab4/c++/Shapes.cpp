@@ -233,6 +233,22 @@ void makeCylinder( Canvas &C, float radius, int radialDivisions, int heightDivis
 			C.addTriangle(bot[0], bot[1], bot[i]);
 		}
 	}
+	
+	for(int i = 1; i <= radialDivisions; i++)
+	{
+		if(i + 1 <= radialDivisions)
+		{
+			C.addTriangle(top[i], bot[i], bot[i + 1]);	//left triangle
+			C.addTriangle(top[i], bot[i + 1], top[i + 1]);	//right triangle
+
+		}
+		else
+		{
+			C.addTriangle(top[i], bot[i], bot[1]);	//left triangle
+			C.addTriangle(top[i], bot[1], top[1]);	//right triangle
+		}
+	}
+	
 }
 
 ///
