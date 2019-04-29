@@ -20,7 +20,7 @@ using namespace std;
 #include "Canvas.h"
 #include "Vertex.h"
 
-#define PI 3.14159265358979323846;
+#define PI 3.14159265358979323846
 
 ///
 // makeCube - Create a unit cube, centered at the origin, with a given number
@@ -94,7 +94,7 @@ void makeCube( Canvas &C, int subdivisions )
 		u=((float)i)/subdivisions;
 		Q[i]=((1-u)*-.5)+u*.5;
 		for(int j=0;j<=subdivisions;j++){
-			//determine x values
+			//determine z values
 			v=((float)j)/subdivisions;
 			P[i][j].z=((1-v)*-.5)+v*.5;
 			P[i][j].y=Q[i];
@@ -114,7 +114,7 @@ void makeCube( Canvas &C, int subdivisions )
 		u=((float)i)/subdivisions;
 		Q[i]=((1-u)*-.5)+u*.5;
 		for(int j=0;j<=subdivisions;j++){
-			//determine x values
+			//determine z values
 			v=((float)j)/subdivisions;
 			P[i][j].z=((1-v)*-.5)+v*.5;
 			P[i][j].y=Q[i];
@@ -131,11 +131,11 @@ void makeCube( Canvas &C, int subdivisions )
 	
 	//top face: y=0.5
     for(int i=0;i<=subdivisions;i++){//create vertices
-		//determine y values
+		//determine x values
 		u=((float)i)/subdivisions;
 		Q[i]=((1-u)*-.5)+u*.5;
 		for(int j=0;j<=subdivisions;j++){
-			//determine x values
+			//determine z values
 			v=((float)j)/subdivisions;
 			P[i][j].z=((1-v)*-.5)+v*.5;
 			P[i][j].x=Q[i];
@@ -151,11 +151,11 @@ void makeCube( Canvas &C, int subdivisions )
 	
 	//bottom face: y=-0.5
     for(int i=0;i<=subdivisions;i++){//create vertices
-		//determine y values
+		//determine x values
 		u=((float)i)/subdivisions;
 		Q[i]=((1-u)*-.5)+u*.5;
 		for(int j=0;j<=subdivisions;j++){
-			//determine x values
+			//determine z values
 			v=((float)j)/subdivisions;
 			P[i][j].z=((1-v)*-.5)+v*.5;
 			P[i][j].x=Q[i];
@@ -190,7 +190,49 @@ void makeCylinder( Canvas &C, float radius, int radialDivisions, int heightDivis
     if( heightDivisions < 1 )
         heightDivisions = 1;
 
-    // YOUR IMPLEMENTATION HERE
+    double alpha=0;
+    
+    Vertex top[radialDivisions+1], bot[radialDivisions+1];
+    //centerpoints for drawing top disc
+    top[0].y=0.5;
+    top[0].x=0;
+    top[0].z=0;
+	//centerpoints for drawing bot disc
+    bot[0].y=-.5;
+    bot[0].x=0;
+	bot[0].z=0;
+	
+	//calculating radius lines for top/bottom disks
+	for(int i = 1; i <= radialDivisions; i ++)
+	{
+		float x = .5 * cos(alpha);
+		float z = .5 * -sin(alpha);		//since up on the z axis is actually 
+										//negative(going into the screen)
+		top[i].x = x;
+		top[i].z = z;
+		top[i].y = .5;
+		
+		bot[i].x = x;
+		bot[i].z = z;
+		bot[i].y = -.5;
+		alpha += (2 * PI)/((double)(radialDivisions));	//increment alpha to the next angle
+	}
+	
+	//draw triangles representing top and bottom disks
+	for(int i = 1; i <= radialDivisions; i++)
+	{
+		if(i + 1 <= radialDivisions)
+		{
+			C.addTriangle(top[0], top[i], top[i + 1]);
+			C.addTriangle(bot[0], bot[i + 1], bot[i]);
+
+		}
+		else
+		{
+			C.addTriangle(top[0], top[i], top[1]);
+			C.addTriangle(bot[0], bot[1], bot[i]);
+		}
+	}
 }
 
 ///
