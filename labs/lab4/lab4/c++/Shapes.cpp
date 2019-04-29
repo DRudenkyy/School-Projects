@@ -218,9 +218,9 @@ void makeCylinder( Canvas &C, float radius, int radialDivisions, int heightDivis
 		alpha += (2 * PI)/((double)(radialDivisions));	//increment alpha to the next angle
 	}
 	
-	//draw triangles representing top and bottom disks
 	for(int i = 1; i <= radialDivisions; i++)
 	{
+		//draw triangles representing top and bottom disks
 		if(i + 1 <= radialDivisions)
 		{
 			C.addTriangle(top[0], top[i], top[i + 1]);
@@ -232,12 +232,9 @@ void makeCylinder( Canvas &C, float radius, int radialDivisions, int heightDivis
 			C.addTriangle(top[0], top[i], top[1]);
 			C.addTriangle(bot[0], bot[1], bot[i]);
 		}
-	}
-	
-	//faces
-	Vertex P1, P2;
-	for(int i = 1; i <= radialDivisions; i++)
-	{
+		
+		//draw the faces
+		Vertex P1, P2;
 		Vertex left[heightDivisions+1];
 		Vertex right[heightDivisions+1];
 		//map the bottom vertices to the new P1 and P2 at every iteration
@@ -246,8 +243,8 @@ void makeCylinder( Canvas &C, float radius, int radialDivisions, int heightDivis
 		}else{
 			P1=bot[i], P2=bot[i+1];
 		}
-		left[0]=P1;		//left side of triangle
-		right[0]=P2;	//right side of triangle
+		left[0]=P1;		//left side of rectangular face
+		right[0]=P2;	//right side of rectengular face
 		float yCurr=-0.5;
 		for(int j=1; j<= heightDivisions; j++){//loop divisions starting from the
 											//bottom and work our way up
