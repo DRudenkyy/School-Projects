@@ -234,18 +234,34 @@ void makeCylinder( Canvas &C, float radius, int radialDivisions, int heightDivis
 		}
 	}
 	
+	//faces
+	Vertex P1, P2;
 	for(int i = 1; i <= radialDivisions; i++)
 	{
-		if(i + 1 <= radialDivisions)
-		{
-			C.addTriangle(top[i], bot[i], bot[i + 1]);	//left triangle
-			C.addTriangle(top[i], bot[i + 1], top[i + 1]);	//right triangle
-
+		Vertex left[heightDivisions+1];
+		Vertex right[heightDivisions+1];
+		//map the bottom vertices to the new P1 and P2 at every iteration
+		if(i==radialDivisions){//last face
+			P1=bot[i], P2=bot[1];
+		}else{
+			P1=bot[i], P2=bot[i+1];
 		}
-		else
-		{
-			C.addTriangle(top[i], bot[i], bot[1]);	//left triangle
-			C.addTriangle(top[i], bot[1], top[1]);	//right triangle
+		left[0]=P1;		//left side of triangle
+		right[0]=P2;	//right side of triangle
+		float yCurr=-0.5;
+		for(int j=1; j<= heightDivisions; j++){//loop divisions starting from the
+											//bottom and work our way up
+			yCurr+=1.0/((float)heightDivisions);
+			left[j].y=yCurr;
+			left[j].x=P1.x;
+			left[j].z=P1.z;
+			
+			right[j].y=yCurr;
+			right[j].x=P2.x;
+			right[j].z=P2.z;
+			
+			C.addTriangle(left[j-1], right[j-1], left[j]);
+			C.addTriangle(right[j-1], right[j], left[j]);
 		}
 	}
 	
