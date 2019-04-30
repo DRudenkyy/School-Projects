@@ -376,18 +376,42 @@ void makeSphere( Canvas &C, float radius, int slices, int stacks )
     if( stacks < 3 )
         stacks = 3;
     
+    //vertex tessellation equations for sphere
     Vertex top={0, 0.5, 0}, bot={0, -0.5, 0};
     Vertex sphere[stacks+1][slices];
+		//latitude	//longitude
     double phi=0, theta=0;
     for(int i=1;i<stacks;i++){//create vertices
-		phi+=PI/((float)stacks);
+		phi += PI/((float)stacks);
 		for(int j=0;j<slices;j++){
 			theta+=2*PI/((float)slices);
 			sphere[i][j].x=radius*cos(theta)*sin(phi);
-			sphere[i][j].y=radius*cos(phi);
 			sphere[i][j].z=radius*sin(theta)*sin(phi);
+			sphere[i][j].y=radius*cos(phi);
 		}
 		
-		theta=0;
+		theta = 0;
+	}
+	//draw the ball
+	for(int i=1;i<=stacks;i++){
+		if(i==stacks){//bottom stack
+			for(int j=0;j<slices;j++){
+				if(j==slices-1){
+					C.addTriangle(bot, sphere[i-1][j], sphere[i-1][0]);
+				}else{
+					C.addTriangle(bot, sphere[i-1][j], sphere[i-1][j+1]);
+				}
+			}
+		}else{
+			if(i==1){//top stack
+				for(int j=0;j<slices;j++){
+					if(j==slices-1){
+						C.addTriangle(top, sphere[i][0], sphere[i][j]);
+					}else{
+						C.addTriangle(top, sphere[i][j+1], sphere[i][j]);
+					}
+				}
+			}
+		}
 	}
 }
