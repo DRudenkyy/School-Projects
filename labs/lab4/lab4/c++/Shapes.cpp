@@ -376,5 +376,18 @@ void makeSphere( Canvas &C, float radius, int slices, int stacks )
     if( stacks < 3 )
         stacks = 3;
     
-    // YOUR IMPLEMENTATION HERE
+    Vertex top={0, 0.5, 0}, bot={0, -0.5, 0};
+    Vertex sphere[stacks+1][slices];
+    double phi=0, theta=0;
+    for(int i=1;i<stacks;i++){//create vertices
+		phi+=PI/((float)stacks);
+		for(int j=0;j<slices;j++){
+			theta+=2*PI/((float)slices);
+			sphere[i][j].x=radius*cos(theta)*sin(phi);
+			sphere[i][j].y=radius*cos(phi);
+			sphere[i][j].z=radius*sin(theta)*sin(phi);
+		}
+		
+		theta=0;
+	}
 }
