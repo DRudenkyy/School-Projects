@@ -56,15 +56,6 @@ void makeCube( Canvas &C, int subdivisions )
 		for(int j=0;j<subdivisions;j++){
 			C.addTriangle(P[i][j], P[i+1][j+1], P[i+1][j]);//upper triangle
 			C.addTriangle(P[i][j], P[i][j+1], P[i+1][j+1]);//lower triangle
-			cerr << "upper" << i << j << ": (" <<  
-			P[i][j].x << ", " << P[i][j].y << ", " << P[i][j].z << ") (" <<
-			P[i+1][j+1].x <<  ", " << P[i+1][j+1].y << ", " << P[i+1][j+1].z << ") (" <<
-			P[i+1][j].x << ", " << P[i+1][j].y << ", " << P[i+1][j].z << ") " << endl;
-			
-			cerr << "lower" << i << j << ": (" <<  
-			P[i][j].x << ", " << P[i][j].y << ", " << P[i][j].z << ") (" <<
-			P[i][j+1].x << ", " << P[i][j+1].y << ", " << P[i][j+1].z << ") (" <<
-			P[i+1][j+1].x << ", " << P[i+1][j+1].y << ", " << P[i+1][j+1].z << ") " << endl;
 		}
 	}
 	
@@ -257,6 +248,7 @@ void makeCylinder( Canvas &C, float radius, int radialDivisions, int heightDivis
 			right[j].x=P2.x;
 			right[j].z=P2.z;
 			
+			
 			C.addTriangle(left[j-1], right[j-1], left[j]);
 			C.addTriangle(right[j-1], right[j], left[j]);
 		}
@@ -314,19 +306,13 @@ void makeCone( Canvas &C, float radius, int radialDivisions, int heightDivisions
 		if(i + 1 <= radialDivisions)
 		{
 			C.addTriangle(base[0], base[i+1], base[i]);
-			//C.addTriangle(apex, base[i], base[i+1]);
 
 		}
 		else //looping back to last triangle
 		{
 			C.addTriangle(base[0], base[1], base[i]);
-			//C.addTriangle(apex, base[i], base[1]);
 		}
-	}
-	
-	
-	for(int i = 1; i <= radialDivisions; i++)
-	{	
+		
 		//draw the faces
 		Vertex P1, P2;
 		Vertex left[heightDivisions+1];
@@ -337,30 +323,31 @@ void makeCone( Canvas &C, float radius, int radialDivisions, int heightDivisions
 		}else{
 			P1=base[i], P2=base[i+1];
 		}
-		left[0]=P1;		//left side of rectangular face
-		right[0]=P2;	//right side of rectangular face
+		left[0]=P1;		//left side of triangle face
+		right[0]=P2;	//right side of triangle face
 		float yCurr=-0.5;
 		for(int j=1; j<= heightDivisions; j++){//loop divisions starting from the
 											//bottom and work our way up
+			//the original connecting triangle
 			if(j == heightDivisions) {
 				C.addTriangle(apex, left[j-1], right[j-1]);
+				break;
 			}
-			else
-			{
-				yCurr+=1.0/((float)heightDivisions);
-				alpha = yCurr - .5;
+			//the subdivided triangles calculations
+			yCurr+=1.0/((float)heightDivisions);
+			alpha = yCurr - .5;
 
-				left[j].y=yCurr;
-				left[j].x=((1-alpha)*apex.x)+(alpha*left[0].x);
-				left[j].z=((1-alpha)*apex.z)+(alpha*left[0].z);
-				
-				right[j].y=yCurr;
-				right[j].x=((1-alpha)*apex.x)+(alpha*left[0].x);
-				right[j].z=((1-alpha)*apex.z)+(alpha*left[0].z);
-				
-				C.addTriangle(left[j-1], right[j-1], left[j]);
-				C.addTriangle(right[j-1], right[j], left[j]);
-			}
+			left[j].y=yCurr;
+			left[j].x=((1+alpha)*apex.x)-(alpha*left[0].x);
+			left[j].z=((1+alpha)*apex.z)-(alpha*left[0].z);
+			
+			right[j].y=yCurr;
+			right[j].x=((1+alpha)*apex.x)-(alpha*right[0].x);
+			right[j].z=((1+alpha)*apex.z)-(alpha*right[0].z);
+			
+			C.addTriangle(left[j-1], right[j-1], left[j]);
+			C.addTriangle(right[j-1], right[j], left[j]);
+			
 		}
 	}
 }
