@@ -314,13 +314,53 @@ void makeCone( Canvas &C, float radius, int radialDivisions, int heightDivisions
 		if(i + 1 <= radialDivisions)
 		{
 			C.addTriangle(base[0], base[i+1], base[i]);
-			C.addTriangle(apex, base[i], base[i+1]);
+			//C.addTriangle(apex, base[i], base[i+1]);
 
 		}
 		else //looping back to last triangle
 		{
 			C.addTriangle(base[0], base[1], base[i]);
-			C.addTriangle(apex, base[i], base[1]);
+			//C.addTriangle(apex, base[i], base[1]);
+		}
+	}
+	
+	
+	for(int i = 1; i <= radialDivisions; i++)
+	{	
+		//draw the faces
+		Vertex P1, P2;
+		Vertex left[heightDivisions+1];
+		Vertex right[heightDivisions+1];
+		//map the base vertices to the new P1 and P2 at every iteration
+		if(i==radialDivisions){//last face
+			P1=base[i], P2=base[1];
+		}else{
+			P1=base[i], P2=base[i+1];
+		}
+		left[0]=P1;		//left side of rectangular face
+		right[0]=P2;	//right side of rectangular face
+		float yCurr=-0.5;
+		for(int j=1; j<= heightDivisions; j++){//loop divisions starting from the
+											//bottom and work our way up
+			if(j == heightDivisions) {
+				C.addTriangle(apex, left[j-1], right[j-1]);
+			}
+			else
+			{
+				yCurr+=1.0/((float)heightDivisions);
+				alpha = yCurr - .5;
+
+				left[j].y=yCurr;
+				left[j].x=((1-alpha)*apex.x)+(alpha*left[0].x);
+				left[j].z=((1-alpha)*apex.z)+(alpha*left[0].z);
+				
+				right[j].y=yCurr;
+				right[j].x=((1-alpha)*apex.x)+(alpha*left[0].x);
+				right[j].z=((1-alpha)*apex.z)+(alpha*left[0].z);
+				
+				C.addTriangle(left[j-1], right[j-1], left[j]);
+				C.addTriangle(right[j-1], right[j], left[j]);
+			}
 		}
 	}
 }
