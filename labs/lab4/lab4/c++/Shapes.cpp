@@ -411,6 +411,19 @@ void makeSphere( Canvas &C, float radius, int slices, int stacks )
 						C.addTriangle(top, sphere[i][j+1], sphere[i][j]);
 					}
 				}
+			}else{//everything in between
+				for(int j=0;j<slices;j++){
+					Vertex ll, lr, ul, ur;
+					if(j==slices-1){
+						ll=sphere[i-1][j], lr=sphere[i-1][0], 
+						ul=sphere[i][j], ur=sphere[i][0];
+					}else{
+						ll=sphere[i-1][j], lr=sphere[i-1][j+1], 
+						ul=sphere[i][j], ur=sphere[i][j+1];
+					}
+					C.addTriangle(ll, lr, ul);
+					C.addTriangle(lr, ur, ul);
+				}
 			}
 		}
 	}
