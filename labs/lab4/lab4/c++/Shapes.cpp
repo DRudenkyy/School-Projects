@@ -244,7 +244,7 @@ void makeCylinder( Canvas &C, float radius, int radialDivisions, int heightDivis
 			P1=bot[i], P2=bot[i+1];
 		}
 		left[0]=P1;		//left side of rectangular face
-		right[0]=P2;	//right side of rectengular face
+		right[0]=P2;	//right side of rectangular face
 		float yCurr=-0.5;
 		for(int j=1; j<= heightDivisions; j++){//loop divisions starting from the
 											//bottom and work our way up
@@ -283,7 +283,46 @@ void makeCone( Canvas &C, float radius, int radialDivisions, int heightDivisions
     if( heightDivisions < 1 )
         heightDivisions = 1;
 
-    // YOUR IMPLEMENTATION HERE
+    double alpha=0;
+    
+    Vertex base[radialDivisions+1];
+    
+    //apex tip of the cone
+    Vertex apex = {0, .5, 0};
+    
+	//centerpoints for drawing base disc
+    base[0].y=-.5;
+    base[0].x=0;
+	base[0].z=0;
+	
+	//calculating radius lines for base disk
+	for(int i = 1; i <= radialDivisions; i ++)
+	{
+		float x = .5 * cos(alpha);
+		float z = .5 * -sin(alpha);		//since up on the z axis is actually 
+										//negative(going into the screen)
+		
+		base[i].x = x;
+		base[i].z = z;
+		base[i].y = -.5;
+		alpha += (2 * PI)/((double)(radialDivisions));	//increment alpha to the next angle
+	}
+	
+	for(int i = 1; i <= radialDivisions; i++)
+	{
+		//draw triangles representing base disk
+		if(i + 1 <= radialDivisions)
+		{
+			C.addTriangle(base[0], base[i+1], base[i]);
+			C.addTriangle(apex, base[i], base[i+1]);
+
+		}
+		else //looping back to last triangle
+		{
+			C.addTriangle(base[0], base[1], base[i]);
+			C.addTriangle(apex, base[i], base[1]);
+		}
+	}
 }
 
 ///
