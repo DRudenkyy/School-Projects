@@ -2,7 +2,7 @@
 
 // Phong vertex shader
 //
-// Contributor:  YOUR_NAME_HERE
+// Contributor:  Jake Brandt
 
 // INCOMING DATA
 
@@ -34,10 +34,25 @@ uniform float far;
 // order to perform the vertex shader portion of the shading
 // computations
 
-// OUTGOING DATA
+uniform vec3 lightLocation;
 
 // add all necessary variables for communicating with
 // the fragment shader here
+
+out vec3 lightVector;
+out vec3 viewVector;
+out vec3 surfaceNormal;
+
+uniform vec3 lightAmbientIllumination;
+uniform float lightAmbientReflectivity;
+uniform vec3 lightAmbientColor;
+uniform vec3 lightDiffuseIllumination;
+uniform float lightDiffuseReflectivity;
+uniform vec3 lightDiffuseColor;
+uniform vec3 lightSpecularIllumination;
+uniform float lightSpecularReflectivity;
+uniform vec3 lightSpecularColor;
+uniform float lightSpecularExponent;
 
 // Inversion functions for 2x2, 3x3, and 4x4 matrices by Mikola Lysenko.
 // Origin: https://github.com/glslify/glsl-inverse/blob/master/index.glsl
@@ -198,6 +213,27 @@ void main()
     // for a discussion.  normal transformation should be done using the
     // inverse transpose of the upper-left 3x3 submatrix of the modelView
     // matrix.
+
+    // Move our vertex position into world space (same space as light source)
+    vec4 vPositionWorld =
+      modelMat *
+      vPosition;
+
+    // Direction from vertex TO light
+    lightVector = normalize(
+      lightLocation -
+      vec3(vPositionWorld));
+
+    // Direction from vertex TO viewer/camera
+    viewVector = normalize(
+      cPosition -
+      vec3(vPositionWorld));
+    
+    // Surface normal of vertex, rotated and scaled
+    // to be oriented with model's transforms.
+    surfaceNormal = normalize(
+      inverse(transpose(mat3(modelViewMat))) *
+      vNormal);
 
     // Transform the vertex location into clip space
     gl_Position =  projMat * viewMat  * modelMat * vPosition;

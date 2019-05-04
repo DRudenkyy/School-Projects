@@ -13,10 +13,12 @@
 //  This code can be compiled as either C or C++.
 ///
 
+#include <exception>
 #include "Lighting.h"
 #include "Shapes.h"
+#include "WorldParameters.h"
 
-// Add any global definitions and/or variables you need here.
+using namespace std;
 
 ///
 // This function sets up the lighting, material, and shading parameters
@@ -31,5 +33,53 @@
 ///
 void setUpPhong( GLuint program, int obj )
 {
-    // Add your code here
+    GLuint locLightLocation = glGetUniformLocation(program, "lightLocation");
+    GLuint locAmbientIllumination = glGetUniformLocation(program, "lightAmbientIllumination");
+    GLuint locAmbientReflectivity = glGetUniformLocation(program, "lightAmbientReflectivity");
+    GLuint locAmbientColor = glGetUniformLocation(program, "lightAmbientColor");
+    GLuint locDiffuseIllumination = glGetUniformLocation(program, "lightDiffuseIllumination");
+    GLuint locDiffuseReflectivity = glGetUniformLocation(program, "lightDiffuseReflectivity");
+    GLuint locDiffuseColor = glGetUniformLocation(program, "lightDiffuseColor");
+    GLuint locSpecularIllumination = glGetUniformLocation(program, "lightSpecularIllumination");
+    GLuint locSpecularReflectivity = glGetUniformLocation(program, "lightSpecularReflectivity");
+    GLuint locSpecularColor = glGetUniformLocation(program, "lightSpecularColor");
+    GLuint locSpecularExponent = glGetUniformLocation(program, "lightSpecularExponent");
+
+    //
+    // Light source properties
+
+    glUniform3fv(locLightLocation, 1, lightLocation);
+    glUniform3fv(locAmbientIllumination, 1, ambientIllumination);
+    glUniform3fv(locDiffuseIllumination, 1, diffuseIllumination);
+    glUniform3fv(locSpecularIllumination, 1, specularIllumination);
+
+    //
+    // Determine which model we're rendering; send in the respective
+    // material properties. See WorldParameters.h for the definition
+    // of these variables.
+
+    if (obj == OBJ_TEAPOT)
+    {
+        glUniform1f(locAmbientReflectivity, teapotAmbientReflectivity);
+        glUniform3fv(locAmbientColor, 1, teapotAmbientColor);
+        glUniform1f(locDiffuseReflectivity, teapotDiffuseReflectivity);
+        glUniform3fv(locDiffuseColor, 1, teapotDiffuseColor);
+        glUniform1f(locSpecularReflectivity, teapotSpecularReflectivity);
+        glUniform3fv(locSpecularColor, 1, teapotSpecularColor);
+        glUniform1f(locSpecularExponent, teapotSpecularExponent);
+    }
+    else if (obj == OBJ_SPHERE)
+    {
+        glUniform1f(locAmbientReflectivity, sphereAmbientReflectivity);
+        glUniform3fv(locAmbientColor, 1, sphereAmbientColor);
+        glUniform1f(locDiffuseReflectivity, sphereDiffuseReflectivity);
+        glUniform3fv(locDiffuseColor, 1, sphereDiffuseColor);
+        glUniform1f(locSpecularReflectivity, sphereSpecularReflectivity);
+        glUniform3fv(locSpecularColor, 1, sphereSpecularColor);
+        glUniform1f(locSpecularExponent, sphereSpecularExponent);
+    }
+    else
+    {
+        __throw_invalid_argument("Specified object obj not supported.");
+    }
 }

@@ -377,8 +377,15 @@ int main( int argc, char **argv ) {
 
     glfwSetKeyCallback( window, keyboard );
 
+    int animDelay = 0;
+
     while( !glfwWindowShouldClose(window) ) {
-        animate();
+        if (animDelay > 3000) {
+            animDelay = 0;
+            animate();
+        } else {
+            animDelay++;
+        }
         if( updateDisplay ) {
             updateDisplay = false;
             display();
