@@ -20,6 +20,8 @@ using namespace std;
 #include "Textures.h"
 #include "Viewing.h"
 
+#define PI 3.14159265358979323846
+
 /*  
 ** The teapot
 */
@@ -686,6 +688,102 @@ void makeQuad( Canvas &C )
 }
 
 ///
+// makeCone - Create polygons for a cone with unit height, centered at the
+// origin, with separate number of radial subdivisions and height 
+// subdivisions.
+//
+// @param radius - Radius of the base of the cone
+// @param radialDivision - number of subdivisions on the radial base
+// @param heightDivisions - number of subdivisions along the height
+//
+// Can only use calls to C.addTriangle()
+///
+void makeCone( Canvas &C, float radius, int radialDivisions, int heightDivisions )
+{
+    if( radialDivisions < 3 )
+        radialDivisions = 3;
+
+    if( heightDivisions < 1 )
+        heightDivisions = 1;
+
+    double alpha=0;
+    
+    Vertex base[radialDivisions+1];
+    
+    //apex tip of the cone
+    Vertex apex = {0, .5, 0};
+    
+	//centerpoints for drawing base disc
+    base[0].y=-.5;
+    base[0].x=0;
+	base[0].z=0;
+	
+	//calculating radius lines for base disk
+	for(int i = 1; i <= radialDivisions; i ++)
+	{
+		float x = .5 * cos(alpha);
+		float z = .5 * -sin(alpha);		//since up on the z axis is actually 
+										//negative(going into the screen)
+		
+		base[i].x = x;
+		base[i].z = z;
+		base[i].y = -.5;
+		alpha += (2 * PI)/((double)(radialDivisions));	//increment alpha to the next angle
+	}
+	
+	for(int i = 1; i <= radialDivisions; i++)
+	{
+		//draw triangles representing base disk
+		if(i + 1 <= radialDivisions)
+		{
+			C.addTriangle(base[0], base[i+1], base[i]);
+
+		}
+		else //looping back to last triangle
+		{
+			C.addTriangle(base[0], base[1], base[i]);
+		}
+		
+		//draw the faces
+		Vertex P1, P2;
+		Vertex left[heightDivisions+1];
+		Vertex right[heightDivisions+1];
+		//map the base vertices to the new P1 and P2 at every iteration
+		if(i==radialDivisions){//last face
+			P1=base[i], P2=base[1];
+		}else{
+			P1=base[i], P2=base[i+1];
+		}
+		left[0]=P1;		//left side of triangle face
+		right[0]=P2;	//right side of triangle face
+		float yCurr=-0.5;
+		for(int j=1; j<= heightDivisions; j++){//loop divisions starting from the
+											//bottom and work our way up
+			//the original connecting triangle
+			if(j == heightDivisions) {
+				C.addTriangle(apex, left[j-1], right[j-1]);
+				break;
+			}
+			//the subdivided triangles calculations
+			yCurr+=1.0/((float)heightDivisions);
+			alpha = yCurr - .5;
+
+			left[j].y=yCurr;
+			left[j].x=((1+alpha)*apex.x)-(alpha*left[0].x);
+			left[j].z=((1+alpha)*apex.z)-(alpha*left[0].z);
+			
+			right[j].y=yCurr;
+			right[j].x=((1+alpha)*apex.x)-(alpha*right[0].x);
+			right[j].z=((1+alpha)*apex.z)-(alpha*right[0].z);
+			
+			C.addTriangle(left[j-1], right[j-1], left[j]);
+			C.addTriangle(right[j-1], right[j], left[j]);
+			
+		}
+	}
+}
+
+///
 // drawShape
 //
 // Invoked whenever an object must be redrawn
@@ -702,7 +800,7 @@ void drawShape( GLuint shader, int obj, BufferSet &bset ) {
     extern GLfloat angles;
     extern GLfloat xlate[3];
 
-    if( obj != OBJ_QUAD && obj != OBJ_TEAPOT ) {
+    if( obj != OBJ_QUAD && obj != OBJ_TEAPOT  && obj != OBJ_CONE) {
 	cerr << "drawShape: unknown object " << obj << " - ignoring" << endl;
 	return;
     }
@@ -729,13 +827,21 @@ void drawShape( GLuint shader, int obj, BufferSet &bset ) {
             (Tuple) { angles, angles, angles },
             (Tuple) { -1.25f, 1.0f, -1.5f }
         );
-    } else {
+    } else if(obj == OBJ_TEAPOT){
         // set up the Phong shading information
         setUpPhong( shader, OBJ_TEAPOT );
         setUpTransforms( shader,
             (Tuple) { 2.0f, 2.0f, 2.0f },
             (Tuple) { angles, angles, angles },
             (Tuple) { 1.0f, -0.8f, -1.5f }
+	);
+	} else {
+        // set up the Phong shading information
+        setUpPhong( shader, OBJ_CONE );
+        setUpTransforms( shader,
+            (Tuple) { 2.0f, 2.0f, 2.0f },	//scale
+            (Tuple) { angles, angles, angles },	//rotate
+            (Tuple) { 1.0f, -0.8f, -1.5f }	//xlate
 	);
     }
 

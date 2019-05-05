@@ -56,6 +56,7 @@ int w_height = 600;
 BufferSet quadBuffers;
 BufferSet teapotBuffers;
 BufferSet sphereBuffers;
+BufferSet coneBuffers;
 
 // Animation flag
 bool animating = false;
@@ -91,6 +92,7 @@ void createShape( int obj, Canvas &C )
         case OBJ_QUAD:    makeQuad( C ); break;
 	case OBJ_SPHERE:  makeSphere( C ); break;
 	case OBJ_TEAPOT:  makeTeapot( C ); break;
+	case OBJ_CONE: makeCone(C, 2, 10, 10); break;
 	default:          makeTeapot( C ); break;
     }
 
@@ -99,9 +101,11 @@ void createShape( int obj, Canvas &C )
         quadBuffers.createBuffers( C );
     } else if( obj == OBJ_SPHERE ) {
         sphereBuffers.createBuffers( C );
-    } else {
+    } else if(obj == OBJ_TEAPOT) {
         teapotBuffers.createBuffers( C );
-    }
+    } else {
+		coneBuffers.createBuffers( C );
+	}
 }
 
 ///
@@ -150,6 +154,7 @@ void init( void )
     createShape( OBJ_QUAD, *canvas );
     createShape( OBJ_TEAPOT, *canvas );
     createShape( OBJ_SPHERE, *canvas );
+    createShape( OBJ_CONE, *canvas );
 }
 
 ///
@@ -212,6 +217,8 @@ void display( void )
 
     // now, draw the teapot
     drawShape( pshader, OBJ_TEAPOT, teapotBuffers );
+    
+    drawShape( pshader, OBJ_CONE, coneBuffers );
 
 }
 

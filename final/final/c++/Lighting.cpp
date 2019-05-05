@@ -6,7 +6,7 @@
 //  Updated 2018/11/29 by wrc.
 //  Copyright 2016 Rochester Institute of Technology.  All rights reserved.
 //
-//  Contributor:  YOUR_NAME_NERE
+//  Contributor:  Dmytro Rudenkyy
 //
 //  Simple class for setting up Phong illumination/shading.
 //
@@ -77,6 +77,16 @@ void setUpPhong( GLuint program, int obj )
         glUniform1f(locSpecularReflectivity, sphereSpecularReflectivity);
         glUniform3fv(locSpecularColor, 1, sphereSpecularColor);
         glUniform1f(locSpecularExponent, sphereSpecularExponent);
+    }
+    else if (obj == OBJ_CONE)
+    {
+        glUniform1f(locAmbientReflectivity, coneAmbientReflectivity);
+        glUniform3fv(locAmbientColor, 1, coneAmbientColor);
+        glUniform1f(locDiffuseReflectivity, coneDiffuseReflectivity);
+        glUniform3fv(locDiffuseColor, 1, coneDiffuseColor);
+        glUniform1f(locSpecularReflectivity, coneSpecularReflectivity);
+        glUniform3fv(locSpecularColor, 1, coneSpecularColor);
+        glUniform1f(locSpecularExponent, coneSpecularExponent);
     }
     else
     {

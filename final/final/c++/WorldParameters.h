@@ -28,3 +28,11 @@ GLfloat sphereDiffuseColor[] = { 0.49, 0.99, 0.0 };
 GLfloat sphereSpecularReflectivity = 1.0;
 GLfloat sphereSpecularColor[] = { 1.0, 1.0, 1.0 };
 GLfloat sphereSpecularExponent = 50.0;
+
+GLfloat coneAmbientReflectivity = 0.6;
+GLfloat coneAmbientColor[] = { 0.6, 0.6, 0.6 };
+GLfloat coneDiffuseReflectivity = 0.85;
+GLfloat coneDiffuseColor[] = { 0.39, 0.90, 0.0 };
+GLfloat coneSpecularReflectivity = 1.0;
+GLfloat coneSpecularColor[] = { 1.0, 1.0, 1.0 };
+GLfloat coneSpecularExponent = 75.0;

@@ -16,6 +16,7 @@
 #define OBJ_QUAD	0
 #define OBJ_TEAPOT	1
 #define OBJ_SPHERE	2
+#define OBJ_CONE    3
 
 ///
 // makeTeapot
@@ -34,6 +35,8 @@ void makeTeapot( Canvas &C );
 // @param C - Canvas being used
 ///
 void makeQuad( Canvas &C );
+
+void makeCone( Canvas &C, float radius, int radialDivisions, int heightDivisions );
 
 ///
 // drawShape
