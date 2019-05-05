@@ -1,11 +1,14 @@
 ///
-//  finalMain.cpp
+//  textingMain.cpp
 //
-//  Created by Jake Brandt 2019/04/26.
-//  Based on code created by Joe Geigel and Warren Carithers for lab 6.
-//  Copyright 2019 Rochester Institute of Technology.  All rights reserved.
+//  Created by Warren R. Carithers 2016/11/22.
+//  Based on code created by Joe Geigel.
+//  Updated 2018/11/28 by wrc.
+//  Copyright 2016 Rochester Institute of Technology.  All rights reserved.
 //
-//  Main program for final project.
+//  Main program for lighting/shading/texturing assignment
+//
+//  This file should not be modified by students.
 ///
 
 #include <cstdlib>
@@ -24,6 +27,11 @@
 #include "Buffers.h"
 #include "ShaderSetup.h"
 #include "Canvas.h"
+#include "Shapes.h"
+#include "Sphere.h"
+#include "Viewing.h"
+#include "Lighting.h"
+#include "Textures.h"
 
 using namespace std;
 
@@ -40,8 +48,61 @@ Canvas *canvas;
 int w_width  = 600;
 int w_height = 600;
 
+//
+// We need vertex buffers and element buffers for the
+// quad (texture mapped), the teapot (Phong shaded),
+// and the sphere (Phong shaded, by default).
+//
+BufferSet quadBuffers;
+BufferSet teapotBuffers;
+BufferSet sphereBuffers;
+
 // Animation flag
 bool animating = false;
+
+// Initial animation rotation angles for the objects
+GLfloat angles = 0.0f;
+
+// Initial translation factors for the sphere
+#define XLATE_X    1.3f
+#define XLATE_Y    2.2f
+#define XLATE_Z    -1.5f
+GLfloat xlate[3] = { XLATE_X, XLATE_Y, XLATE_Z };
+
+// Current state of animation for the sphere
+int sphereState = 0;
+
+// program IDs...for shader programs
+GLuint pshader, tshader;
+
+///
+// createShape() - create vertex and element buffers for a shape
+//
+// @param obj - which shape to create
+// @param C   - the Canvas to use
+///
+void createShape( int obj, Canvas &C )
+{
+    // clear any previous shape
+    C.clear();
+
+    // make the shape
+    switch( obj ) {
+        case OBJ_QUAD:    makeQuad( C ); break;
+	case OBJ_SPHERE:  makeSphere( C ); break;
+	case OBJ_TEAPOT:  makeTeapot( C ); break;
+	default:          makeTeapot( C ); break;
+    }
+
+    // create the necessary buffers
+    if( obj == OBJ_QUAD ) {
+        quadBuffers.createBuffers( C );
+    } else if( obj == OBJ_SPHERE ) {
+        sphereBuffers.createBuffers( C );
+    } else {
+        teapotBuffers.createBuffers( C );
+    }
+}
 
 ///
 // OpenGL initialization
@@ -57,12 +118,38 @@ void init( void )
         exit( 1 );
     }
 
+    // Load texture image(s)
+    loadTextures();
+
+    // Load shaders, verifying each
+    ShaderError error;
+    tshader = shaderSetup( "texture.vert", "texture.frag", &error );
+    if( !tshader ) {
+        cerr << "Error setting up texture shader - " <<
+            errorString(error) << endl;
+        glfwTerminate();
+        exit( 1 );
+    }
+
+    pshader = shaderSetup( "phong.vert", "phong.frag", &error );
+    if( !pshader ) {
+        cerr << "Error setting up Phong shader - " <<
+            errorString(error) << endl;
+        glfwTerminate();
+        exit( 1 );
+    }
+
     // Other OpenGL initialization
     glEnable( GL_DEPTH_TEST );
     glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
     glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
     glDepthFunc( GL_LEQUAL );
     glClearDepth( 1.0f );
+
+    // Create all our objects
+    createShape( OBJ_QUAD, *canvas );
+    createShape( OBJ_TEAPOT, *canvas );
+    createShape( OBJ_SPHERE, *canvas );
 }
 
 ///
@@ -116,6 +203,16 @@ void display( void )
 {
     // clear and draw params..
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+    // first, the quad
+    drawShape( tshader, OBJ_QUAD, quadBuffers );
+
+    // next, the sphere
+    drawSphere( pshader, tshader, sphereBuffers );
+
+    // now, draw the teapot
+    drawShape( pshader, OBJ_TEAPOT, teapotBuffers );
+
 }
 
 ///
@@ -143,6 +240,14 @@ void keyboard( GLFWwindow *window, int key, int scan, int action, int mods )
             animating = false;
             break;
 
+        case GLFW_KEY_R:    // reset transformations
+            angles = 0.0f;
+            xlate[0] = XLATE_X;
+	    xlate[1] = XLATE_Y;
+	    xlate[2] = XLATE_Z;
+	    sphereState = 0;
+            break;
+
         case GLFW_KEY_ESCAPE:   // terminate the program
         case GLFW_KEY_Q:
             glfwSetWindowShouldClose( window, 1 );
@@ -150,6 +255,64 @@ void keyboard( GLFWwindow *window, int key, int scan, int action, int mods )
     }
 
     updateDisplay = true;
+}
+
+///
+// Animation routine
+///
+void animate( void ) {
+
+    if( animating ) {
+
+	// first, rotation for the objects
+        angles += 1.0f;
+	if( angles >= 360.0f ) {
+	    angles = 0.0f;
+	}
+
+	// next, translation for the sphere
+	switch( sphereState ) {
+
+	    case 0:  // first side
+		// horizontal move until tx reaches 0.5
+	        if( xlate[0] > 0.5f ) {
+		    xlate[0] -= 0.025f;
+		    break;
+		} else {
+		    // fall through into state 1
+		    sphereState = 1;
+		}
+
+	    case 1:  // second side
+		// move downward to the right until ty reaches 1.4
+	        if( xlate[1] > 1.4f ) {
+		    xlate[0] += 0.0125;
+		    xlate[1] -= 0.025f;
+		    break;
+		} else {
+		    // fall through into state 2
+		    sphereState = 2;
+		}
+
+	    case 2:  // third side
+		// move upward to the right until tx reaches 1.3
+	        if( xlate[0] < 1.3f ) {
+		    xlate[0] += 0.0125;
+		    xlate[1] += 0.025f;
+		    break;
+		}
+		// at that point, we fall back to state 0
+
+	    default:  // unknown state - fall back!
+		// move back to state 0
+		sphereState = 0;
+		xlate[0] = XLATE_X;
+		xlate[1] = XLATE_Y;
+
+	}
+
+        updateDisplay = true;
+    }
 }
 
 ///
@@ -174,7 +337,7 @@ int main( int argc, char **argv ) {
     }
 
     GLFWwindow *window = glfwCreateWindow( w_width, w_height,
-        "Final Project - CSCI 510", NULL, NULL );
+        "Lab 6 - Shading and Texturing", NULL, NULL );
 
     if( !window ) {
         cerr << "GLFW window create failed!" << endl;
@@ -214,13 +377,15 @@ int main( int argc, char **argv ) {
 
     glfwSetKeyCallback( window, keyboard );
 
-    //
-    // Main display/render loop
+    int animDelay = 0;
 
     while( !glfwWindowShouldClose(window) ) {
-        // Render loops are where you'd implement any physics or
-        // animation stepping in addition to the rendering.
-
+        if (animDelay > 3000) {
+            animDelay = 0;
+            animate();
+        } else {
+            animDelay++;
+        }
         if( updateDisplay ) {
             updateDisplay = false;
             display();
