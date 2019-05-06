@@ -63,6 +63,8 @@ bool animating = false;
 
 // Initial animation rotation angles for the objects
 GLfloat angles = 0.0f;
+GLfloat xzAngles = 0.0f;
+bool flip = false;
 
 // Initial translation factors for the sphere
 #define XLATE_X    1.3f
@@ -92,7 +94,7 @@ void createShape( int obj, Canvas &C )
         case OBJ_QUAD:    makeQuad( C ); break;
 	case OBJ_SPHERE:  makeSphere( C ); break;
 	case OBJ_TEAPOT:  makeTeapot( C ); break;
-	case OBJ_CONE: makeCone(C, 2, 10, 10); break;
+	case OBJ_CONE: makeCone(C, 2, 20, 20); break;
 	default:          makeTeapot( C ); break;
     }
 
@@ -249,7 +251,9 @@ void keyboard( GLFWwindow *window, int key, int scan, int action, int mods )
 
         case GLFW_KEY_R:    // reset transformations
             angles = 0.0f;
+            xzAngles = 0.0f;
             xlate[0] = XLATE_X;
+            flip = false;
 	    xlate[1] = XLATE_Y;
 	    xlate[2] = XLATE_Z;
 	    sphereState = 0;
@@ -275,6 +279,19 @@ void animate( void ) {
         angles += 1.0f;
 	if( angles >= 360.0f ) {
 	    angles = 0.0f;
+	}
+	
+	if(!flip) {
+		if(xzAngles <= 15)
+			xzAngles += 0.05555f;
+		else
+			flip = true;
+	}
+	else {
+		if(xzAngles >= -15)
+			xzAngles -= 0.05555f;
+		else
+			flip = false;
 	}
 
 	// next, translation for the sphere

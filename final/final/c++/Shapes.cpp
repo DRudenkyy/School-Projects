@@ -798,6 +798,7 @@ void drawShape( GLuint shader, int obj, BufferSet &bset ) {
     // program source file that we need to use here
     extern void selectBuffers( GLuint, BufferSet & );
     extern GLfloat angles;
+    extern GLfloat xzAngles;
     extern GLfloat xlate[3];
 
     if( obj != OBJ_QUAD && obj != OBJ_TEAPOT  && obj != OBJ_CONE) {
@@ -832,16 +833,16 @@ void drawShape( GLuint shader, int obj, BufferSet &bset ) {
         setUpPhong( shader, OBJ_TEAPOT );
         setUpTransforms( shader,
             (Tuple) { 2.0f, 2.0f, 2.0f },
-            (Tuple) { angles, angles, angles },
+            (Tuple) { xzAngles, angles, xzAngles },
             (Tuple) { 1.0f, -0.8f, -1.5f }
 	);
 	} else {
         // set up the Phong shading information
         setUpPhong( shader, OBJ_CONE );
         setUpTransforms( shader,
-            (Tuple) { 2.0f, 2.0f, 2.0f },	//scale
-            (Tuple) { angles, angles, angles },	//rotate
-            (Tuple) { 1.0f, -0.8f, -1.5f }	//xlate
+            (Tuple) { .5f, 1.0f, .5f },	//scale
+            (Tuple) { 0, -1*angles, 0 },	//rotate
+            (Tuple) { 1.0f, -1.3f, -1.5f }	//xlate
 	);
     }
 
