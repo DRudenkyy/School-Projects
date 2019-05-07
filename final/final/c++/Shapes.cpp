@@ -792,6 +792,7 @@ void makeCone( Canvas &C, float radius, int radialDivisions, int heightDivisions
 	}
 }
 
+//given verices for a trinagle, return the normal for that plane
 Vertex computeNormal(Vertex A, Vertex B, Vertex C)
 {
     Vertex U = {B.x - A.x, B.y - A.y, B.z - A.z};
@@ -808,6 +809,7 @@ Vertex computeNormal(Vertex A, Vertex B, Vertex C)
 	return N;
 }
 
+//normalize a vertex
 void normalize(Vertex &A){
 
     double length = sqrt(A.x*A.x+A.y*A.y+A.z*A.z);

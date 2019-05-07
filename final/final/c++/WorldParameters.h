@@ -11,8 +11,8 @@ GLfloat lightLocation1[] = { 3.0, 9.0, 2.0 };
 GLfloat lightLocation2[] = { -3.0, -9.0, 2.0 };
 
 GLfloat ambientIllumination[] = { 0.5, 0.5, 0.5 };
-GLfloat diffuseIllumination[] = { 1.0, 1.0, 1.0 };
-GLfloat specularIllumination[] = { 1.0, 1.0, 1.0 };
+GLfloat diffuseIllumination[] = { .7, .8, .8 };
+GLfloat specularIllumination[] = { .7, .8, .8 };
 
 GLfloat teapotAmbientReflectivity = 0.5;
 GLfloat teapotAmbientColor[] = { 0.5, 0.1, 0.9 };

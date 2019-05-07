@@ -476,7 +476,7 @@ void drawSphere( GLuint pshader, GLuint tshader, BufferSet &bset ) {
     );
 
     setUpTransforms( pshader,
-        (Tuple) { 1.5f, 1.5f, 1.5f },
+        (Tuple) { xlate[0], xlate[1], xlate[2] },
         (Tuple) { angles, angles, angles },
         (Tuple) { xlate[0], xlate[1], xlate[2] }
     );
