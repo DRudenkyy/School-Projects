@@ -731,17 +731,22 @@ void makeCone( Canvas &C, float radius, int radialDivisions, int heightDivisions
 		alpha += (2 * PI)/((double)(radialDivisions));	//increment alpha to the next angle
 	}
 	
+	Vertex N;
 	for(int i = 1; i <= radialDivisions; i++)
 	{
 		//draw triangles representing base disk
 		if(i + 1 <= radialDivisions)
 		{
-			C.addTriangle(base[0], base[i+1], base[i]);
+			//C.addTriangle(base[0], base[i+1], base[i]);
+			N = computeNormal(base[0], base[i+1], base[i]);
+			C.addTriangleWithNorms(base[0], N, base[i+1], N, base[i], N);
 
 		}
 		else //looping back to last triangle
 		{
-			C.addTriangle(base[0], base[1], base[i]);
+			//C.addTriangle(base[0], base[1], base[i]);
+			N = computeNormal(base[0], base[1], base[i]);
+			C.addTriangleWithNorms(base[0], N, base[1], N, base[i], N);
 		}
 		
 		//draw the faces
@@ -776,11 +781,40 @@ void makeCone( Canvas &C, float radius, int radialDivisions, int heightDivisions
 			right[j].x=((1+alpha)*apex.x)-(alpha*right[0].x);
 			right[j].z=((1+alpha)*apex.z)-(alpha*right[0].z);
 			
-			C.addTriangle(left[j-1], right[j-1], left[j]);
-			C.addTriangle(right[j-1], right[j], left[j]);
+			//C.addTriangle(left[j-1], right[j-1], left[j]);
+			N = computeNormal(left[j-1], right[j-1], left[j]);
+			C.addTriangleWithNorms(left[j-1], N, right[j-1], N, left[j], N);
+			N = computeNormal(right[j-1], right[j], left[j]);
+			C.addTriangleWithNorms(right[j-1], N, right[j], N, left[j], N);
+			//C.addTriangle(right[j-1], right[j], left[j]);
 			
 		}
 	}
+}
+
+Vertex computeNormal(Vertex A, Vertex B, Vertex C)
+{
+    Vertex U = {B.x - A.x, B.y - A.y, B.z - A.z};
+	Vertex V = {C.x - A.x, C.y - A.y, C.z - A.z};
+	Vertex N = {0, 0, 0};
+	
+	normalize(U);
+	normalize(V);
+	
+	N.x = (U.y * V.z) - (U.z * V.y);
+	N.y = (U.z * V.x) - (U.x * V.z);
+	N.z = (U.x * V.y) - (U.y * V.x);
+	
+	return N;
+}
+
+void normalize(Vertex &A){
+
+    double length = sqrt(A.x*A.x+A.y*A.y+A.z*A.z);
+
+    A.x = A.x/length;
+    A.y = A.y/length;
+    A.z = A.z/length;
 }
 
 ///

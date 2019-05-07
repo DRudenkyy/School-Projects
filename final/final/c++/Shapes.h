@@ -37,6 +37,8 @@ void makeTeapot( Canvas &C );
 void makeQuad( Canvas &C );
 
 void makeCone( Canvas &C, float radius, int radialDivisions, int heightDivisions );
+Vertex computeNormal(Vertex A, Vertex B, Vertex C);
+void normalize(Vertex &A);
 
 ///
 // drawShape
