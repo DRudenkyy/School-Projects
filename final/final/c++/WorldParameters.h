@@ -7,7 +7,8 @@
 
 #include <GLFW/glfw3.h>
 
-GLfloat lightLocation[] = { 3.0, 9.0, 2.0 };
+GLfloat lightLocation1[] = { 3.0, 9.0, 2.0 };
+GLfloat lightLocation2[] = { -3.0, -9.0, 2.0 };
 
 GLfloat ambientIllumination[] = { 0.5, 0.5, 0.5 };
 GLfloat diffuseIllumination[] = { 1.0, 1.0, 1.0 };

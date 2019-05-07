@@ -452,6 +452,7 @@ void drawSphere( GLuint pshader, GLuint tshader, BufferSet &bset ) {
     extern GLfloat xlate[3];
     extern GLfloat camX;
 	extern GLfloat camZ;
+	extern GLint lightloc;
 
     // by default, the sphere is drawn using Phong shading.
     // IF YOU ARE DOING THE EXTRA-CREDIT OPTION, this code must
@@ -465,7 +466,7 @@ void drawSphere( GLuint pshader, GLuint tshader, BufferSet &bset ) {
     setUpProjection( pshader );
 
     // set up the Phong shading information
-    setUpPhong( pshader, OBJ_SPHERE );
+    setUpPhong( pshader, OBJ_SPHERE, lightloc );
 
     // set up the camera
     setUpCamera( pshader,

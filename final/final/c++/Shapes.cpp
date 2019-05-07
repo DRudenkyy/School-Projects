@@ -836,6 +836,7 @@ void drawShape( GLuint shader, int obj, BufferSet &bset ) {
     extern GLfloat xlate[3];
     extern GLfloat camX;
 	extern GLfloat camZ;
+	extern GLint lightloc;
 
     if( obj != OBJ_QUAD && obj != OBJ_TEAPOT  && obj != OBJ_CONE) {
 	cerr << "drawShape: unknown object " << obj << " - ignoring" << endl;
@@ -866,7 +867,7 @@ void drawShape( GLuint shader, int obj, BufferSet &bset ) {
         );
     } else if(obj == OBJ_TEAPOT){
         // set up the Phong shading information
-        setUpPhong( shader, OBJ_TEAPOT );
+        setUpPhong( shader, OBJ_TEAPOT, lightloc );
         setUpTransforms( shader,
             (Tuple) { 2.0f, 2.0f, 2.0f },
             (Tuple) { xzAngles, angles, xzAngles },
@@ -874,7 +875,7 @@ void drawShape( GLuint shader, int obj, BufferSet &bset ) {
 	);
 	} else {
         // set up the Phong shading information
-        setUpPhong( shader, OBJ_CONE );
+        setUpPhong( shader, OBJ_CONE, lightloc);
         setUpTransforms( shader,
             (Tuple) { .5f, 1.0f, .5f },	//scale
             (Tuple) { 0, -1*angles, 0 },	//rotate

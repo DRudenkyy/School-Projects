@@ -17,6 +17,7 @@
 #include "Lighting.h"
 #include "Shapes.h"
 #include "WorldParameters.h"
+#include <iostream>
 
 using namespace std;
 
@@ -31,9 +32,9 @@ using namespace std;
 //    parameter values are to be sent
 // @param obj - The object type of the object being drawn
 ///
-void setUpPhong( GLuint program, int obj )
+void setUpPhong( GLuint program, int obj, int lightMode)
 {
-    GLuint locLightLocation = glGetUniformLocation(program, "lightLocation");
+	GLuint locLightLocation = glGetUniformLocation(program, "lightLocation");
     GLuint locAmbientIllumination = glGetUniformLocation(program, "lightAmbientIllumination");
     GLuint locAmbientReflectivity = glGetUniformLocation(program, "lightAmbientReflectivity");
     GLuint locAmbientColor = glGetUniformLocation(program, "lightAmbientColor");
@@ -45,10 +46,13 @@ void setUpPhong( GLuint program, int obj )
     GLuint locSpecularColor = glGetUniformLocation(program, "lightSpecularColor");
     GLuint locSpecularExponent = glGetUniformLocation(program, "lightSpecularExponent");
 
-    //
     // Light source properties
-
-    glUniform3fv(locLightLocation, 1, lightLocation);
+    if(lightMode == 1){
+			glUniform3fv(locLightLocation, 1, lightLocation1);
+	}
+	else{
+		glUniform3fv(locLightLocation, 1, lightLocation2);
+	}
     glUniform3fv(locAmbientIllumination, 1, ambientIllumination);
     glUniform3fv(locDiffuseIllumination, 1, diffuseIllumination);
     glUniform3fv(locSpecularIllumination, 1, specularIllumination);

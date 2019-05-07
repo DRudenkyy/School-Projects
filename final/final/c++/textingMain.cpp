@@ -75,6 +75,7 @@ float radius = 10.0f;
 GLfloat camX   = 10.0f;
 GLfloat camZ   = 10.0f;
 bool flip = false;
+GLint lightloc = 1;
 
 // Initial translation factors for the sphere
 #define XLATE_X    1.3f
@@ -276,6 +277,13 @@ void keyboard( GLFWwindow *window, int key, int scan, int action, int mods )
 			camZ   = 10.0f;
 			cameraMoving = false;
             break;
+            
+        case GLFW_KEY_1:	//change lightlocation to pos1
+			lightloc = 1;
+			break;
+		case GLFW_KEY_2:	//change lightlocation to pos2
+			lightloc = 2;
+			break;
 
         case GLFW_KEY_ESCAPE:   // terminate the program
         case GLFW_KEY_Q:

@@ -35,6 +35,6 @@
 //    parameter values are to be sent
 // @param obj - The object type of the object being drawn
 ///
-void setUpPhong( GLuint program, int obj );
+void setUpPhong( GLuint program, int obj, int lightMode );
 
 #endif
