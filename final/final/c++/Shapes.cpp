@@ -7,7 +7,7 @@
 //
 //  Routines for shape-drawing functions for the teapot and quad objects.
 //
-//  This file should not be modified by students.
+//  Dmytro Rudenkyy
 ///
 
 #include <iostream>
@@ -834,6 +834,8 @@ void drawShape( GLuint shader, int obj, BufferSet &bset ) {
     extern GLfloat angles;
     extern GLfloat xzAngles;
     extern GLfloat xlate[3];
+    extern GLfloat camX;
+	extern GLfloat camZ;
 
     if( obj != OBJ_QUAD && obj != OBJ_TEAPOT  && obj != OBJ_CONE) {
 	cerr << "drawShape: unknown object " << obj << " - ignoring" << endl;
@@ -848,7 +850,7 @@ void drawShape( GLuint shader, int obj, BufferSet &bset ) {
 
     // set up the camera
     setUpCamera( shader,
-        (Tuple) { 0.2f, 3.0f, 6.5f },
+        (Tuple) { camX, 3.0f, camZ },
         (Tuple) { 0.0f, 1.0f, 0.0f },
         (Tuple) { 0.0f, 1.0f, 0.0f }
     );

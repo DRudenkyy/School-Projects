@@ -450,6 +450,8 @@ void drawSphere( GLuint pshader, GLuint tshader, BufferSet &bset ) {
     extern void selectBuffers( GLuint, BufferSet & );
     extern GLfloat angles;
     extern GLfloat xlate[3];
+    extern GLfloat camX;
+	extern GLfloat camZ;
 
     // by default, the sphere is drawn using Phong shading.
     // IF YOU ARE DOING THE EXTRA-CREDIT OPTION, this code must
@@ -467,7 +469,7 @@ void drawSphere( GLuint pshader, GLuint tshader, BufferSet &bset ) {
 
     // set up the camera
     setUpCamera( pshader,
-        (Tuple) { 0.2f, 3.0f, 6.5f },
+        (Tuple) { camX, 3.0f, camZ },
         (Tuple) { 0.0f, 1.0f, 0.0f },
         (Tuple) { 0.0f, 1.0f, 0.0f }
     );

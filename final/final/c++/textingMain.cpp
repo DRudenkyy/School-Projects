@@ -33,6 +33,9 @@
 #include "Lighting.h"
 #include "Textures.h"
 
+#include <cmath>
+
+
 using namespace std;
 
 // do we need to do a display() call?
@@ -61,9 +64,16 @@ BufferSet coneBuffers;
 // Animation flag
 bool animating = false;
 
+// Camera Movement Flag
+bool cameraMoving = false;
+
 // Initial animation rotation angles for the objects
 GLfloat angles = 0.0f;
 GLfloat xzAngles = 0.0f;
+
+float radius = 10.0f;
+GLfloat camX   = 10.0f;
+GLfloat camZ   = 10.0f;
 bool flip = false;
 
 // Initial translation factors for the sphere
@@ -220,6 +230,7 @@ void display( void )
     // now, draw the teapot
     drawShape( pshader, OBJ_TEAPOT, teapotBuffers );
     
+    //draw the cone
     drawShape( pshader, OBJ_CONE, coneBuffers );
 
 }
@@ -248,15 +259,22 @@ void keyboard( GLFWwindow *window, int key, int scan, int action, int mods )
         case GLFW_KEY_S:    // stop animating
             animating = false;
             break;
+            
+        case GLFW_KEY_C:	//camera animation
+			cameraMoving = true;
+			break;
 
-        case GLFW_KEY_R:    // reset transformations
+        case GLFW_KEY_R:    // reset transformations and camera movement
             angles = 0.0f;
             xzAngles = 0.0f;
             xlate[0] = XLATE_X;
             flip = false;
-	    xlate[1] = XLATE_Y;
-	    xlate[2] = XLATE_Z;
-	    sphereState = 0;
+			xlate[1] = XLATE_Y;
+			xlate[2] = XLATE_Z;
+			sphereState = 0;
+			camX   = 10.0f;
+			camZ   = 10.0f;
+			cameraMoving = false;
             break;
 
         case GLFW_KEY_ESCAPE:   // terminate the program
@@ -268,6 +286,16 @@ void keyboard( GLFWwindow *window, int key, int scan, int action, int mods )
     updateDisplay = true;
 }
 
+///
+// Camera Action routine
+///
+void cameraAction( void ) {
+	if(cameraMoving) {
+		camX   = sin(glfwGetTime()) * radius;
+        camZ   = cos(glfwGetTime()) * radius;
+        updateDisplay = true;
+	}
+}
 ///
 // Animation routine
 ///
@@ -281,6 +309,7 @@ void animate( void ) {
 	    angles = 0.0f;
 	}
 	
+	//wobble rotation
 	if(!flip) {
 		if(xzAngles <= 15)
 			xzAngles += 0.05555f;
@@ -407,6 +436,7 @@ int main( int argc, char **argv ) {
         if (animDelay > 3000) {
             animDelay = 0;
             animate();
+            cameraAction();
         } else {
             animDelay++;
         }
